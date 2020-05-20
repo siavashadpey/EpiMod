@@ -35,7 +35,7 @@ class Seir(Equation):
 	def gamma(self, value):
 		self._gamma = gamma
 
-	def source(self, t, u, is_grad_needed = False):
+	def source(self, t = 0, u = 0, is_grad_needed = False):
 
 		assert u.shape == (self._n_components,), "u is not a vector of size n_components"
 		
