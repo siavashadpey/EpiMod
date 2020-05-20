@@ -33,7 +33,7 @@ class Seir(Equation):
 
 	@gamma.setter
 	def gamma(self, value):
-		self._gamma = gamma
+		self._gamma = value
 
 	def source(self, t = 0, u = 0, is_grad_needed = False):
 
