@@ -1,5 +1,3 @@
-#!/usr/bin/env Python3
-
 import numpy as np
 from equation import Equation
 
@@ -80,3 +78,6 @@ class Seir(Equation):
 
 		assert du_dp.shape == (self._n_components, self._n_parameters), "du_dp is not of size n_components x n_parameters"
 		return (u[2], du_dp[2,:])
+
+eqn = Seir()
+print(eqn.beta)

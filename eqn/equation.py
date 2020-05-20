@@ -1,5 +1,3 @@
-#!/usr/bin/env Python3
-
 from abc import ABCMeta, abstractmethod
 
 class Equation(metaclass=ABCMeta):
