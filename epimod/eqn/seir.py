@@ -1,5 +1,5 @@
 import numpy as np
-from equation import Equation
+from epimod.eqn.equation import Equation
 
 class Seir(Equation):
 	def __init__(self, beta=0, sigma=0, gamma=0):
@@ -78,6 +78,3 @@ class Seir(Equation):
 
 		assert du_dp.shape == (self._n_components, self._n_parameters), "du_dp is not of size n_components x n_parameters"
 		return (u[2], du_dp[2,:])
-
-eqn = Seir()
-print(eqn.beta)

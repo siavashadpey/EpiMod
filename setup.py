@@ -19,7 +19,7 @@ REQUIREMENTS_FILE = join(PROJECT_ROOT, 'requirements.txt')
 with open(REQUIREMENTS_FILE) as f:
     install_reqs = f.read().splitlines()
 
-#test_reqs = ['unittest']
+test_reqs = ['unittest']
 
 def get_version():
     VERSIONFILE = join('epimod','__init__.py')
@@ -39,4 +39,5 @@ if __name__ == "__main__":
           description=DESCRIPTION,
           packages=find_packages(),
           python_requires=">=3.6",
+          tests_require=test_reqs,
           install_requires=install_reqs)
