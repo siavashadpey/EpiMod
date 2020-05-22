@@ -99,5 +99,6 @@ class ODESolver(metaclass=ABCMeta):
 			else:
 				return self._outputs
 
+	@abstractmethod
 	def solve(self):
 		pass

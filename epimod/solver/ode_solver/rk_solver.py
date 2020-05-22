@@ -17,7 +17,6 @@ class RKSolver(ODESolver):
 		self._state = np.copy(self._initial_state)
 		self._dstate_dp = np.copy(self._initial_dstate_dp)
 		self._time = self._initial_time
-
 		# initial output
 		if is_output_computed:
 			if self._is_output_grad_needed:

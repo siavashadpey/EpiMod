@@ -15,10 +15,9 @@ theano.config.exception_verbosity= 'high'
 decimal = 7
 class CachedSEIRSimulation(CachedSimulation):
 
-	def _update_parameters():
-		x = np.array(self._eqn_parameters,dtype=np.float64)
-		(beta, sigma, gamma) = x
-		eqn = self._ode_solver.eqn
+	def _update_parameters(self):
+		(beta, sigma, gamma) = np.array(self._eqn_parameters, dtype=np.float64) #self._eqn_parameters
+		eqn = self._ode_solver.equation
 		eqn.beta = beta
 		eqn.sigma = sigma
 		eqn.gamma = gamma
@@ -31,7 +30,6 @@ class TestModelOp(utt.InferShapeTester):
 		self.setUpModel()
 
 	def setUpModel(self):
-
 		# set ode solver
 		ti = 0
 		tf = 20
@@ -40,16 +38,18 @@ class TestModelOp(utt.InferShapeTester):
 
 		rk.output_frequency = 1
 		rk.set_output_storing_flag(True)
-		rk.equation = Seir()
+		eqn = Seir()
+		rk.equation = eqn
 
 		n_pop = 7E6
 		u0 = np.array([n_pop - 1, 0, 1, 0])
 		u0 /= n_pop
-		rk.set_initial_condition(u0)
+		du0_dp = np.zeros((eqn.n_components(), eqn.n_parameters()))
+		rk.set_initial_condition(u0, du0_dp)
 
 		# set cached_sim object
-		cached_sim = CachedSimulation(rk)
-		cached_sim.set_gradient_flag(False)
+		cached_sim = CachedSEIRSimulation(rk)
+		cached_sim.set_gradient_flag(True)
 
 		# set theano model op object
 		self.op_class = ModelOp(cached_sim)
@@ -71,5 +71,59 @@ class TestModelOp(utt.InferShapeTester):
   							 6.39207233e-07])
 		assert np.allclose(out_act, out)
 
+	# Currently not working, but we test the GradOp individually
+	def test_grad(self):
+		s_val = 1./5.2 
+		g_val = 1./2.28
+		b_val = 2.13*g_val
+		rng = np.random.RandomState(42)
+		theano.tensor.verify_grad(self.op_class, [(b_val, s_val, g_val)], rng=rng)
+
+
+class TestModelGradOp(utt.InferShapeTester):
+	rng = np.random.RandomState(43)
+
+	def setUp(self):
+		super(TestModelGradOp, self).setUp()
+		self.setUpModel()
+
+	def setUpModel(self):
+		# set ode solver
+		ti = 0
+		tf = 20
+		n_steps = tf
+		rk = RKSolver(ti, tf, n_steps)
+
+		rk.output_frequency = 1
+		rk.set_output_storing_flag(True)
+		eqn = Seir()
+		rk.equation = eqn
+
+		n_pop = 7E6
+		u0 = np.array([n_pop - 1, 0, 1, 0])
+		u0 /= n_pop
+		du0_dp = np.zeros((eqn.n_components(), eqn.n_parameters()))
+		rk.set_initial_condition(u0, du0_dp)
+
+		# set cached_sim object
+		cached_sim = CachedSEIRSimulation(rk)
+		cached_sim.set_gradient_flag(True)
+
+		# set theano model op object
+		self.op_class = ModelGradOp(cached_sim)
+
+	def test_perform(self):
+		b = theano.tensor.dscalar('myvar0')
+		s = theano.tensor.dscalar('myvar1')
+		g = theano.tensor.dscalar('myvar2')
+		dL_df = theano.tensor.matrix()
+		f = theano.function([b, s, g, dL_df], self.op_class((b, s, g), dL_df))
+		s_val = 1./5.2 
+		g_val = 1./2.28
+		b_val = 2.13*g_val
+		dL_df_val = np.random.rand(1,21)
+		out = f(b_val, s_val, g_val, dL_df_val)
+		out_act = np.array([3.899076278035202e-06, 1.0157708257250106e-05, -8.113407197470448e-06])
+		assert np.allclose(out_act, out)
 if __name__ == '__main__':
 	unittest.main()
