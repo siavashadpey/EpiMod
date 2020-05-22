@@ -90,9 +90,9 @@ class ODESolver(metaclass=ABCMeta):
 	def get_outputs(self):
 		if self._is_output_stored:
 			if self._is_output_grad_needed:
-				return (self._outputs_array, self._doutputs_dp_array)
+				return (self._time_array, self._outputs_array, self._doutputs_dp_array)
 			else:
-				return self._outputs_array
+				return (self._time_array, self._outputs_array)
 		else:
 			if self._is_output_grad_needed:
 				return (self._outputs, self._doutputs_dp)
