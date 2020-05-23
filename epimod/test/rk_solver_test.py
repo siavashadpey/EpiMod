@@ -106,7 +106,7 @@ class TestRKSolver(unittest.TestCase):
 
 		epsi = 0.001
 
-		# perturb beta
+		# perturb beta0
 		eqn.beta = beta + epsi
 		rk.solve()
 		u_p1 = rk.state()
@@ -145,6 +145,99 @@ class TestRKSolver(unittest.TestCase):
 		# reset
 		eqn.gamma = gamma
 
+		# perturb kappa
+		kappa = 1
+		eqn.kappa = kappa + epsi
+		rk.solve()
+		u_p1 = rk.state()
+
+		eqn.kappa = kappa - epsi
+		rk.solve()
+		u_m1 = rk.state()
+		diff = np.linalg.norm(du_dp[:,3] - (u_p1 - u_m1)/(2*epsi))/np.linalg.norm(u0)
+		np.testing.assert_almost_equal(diff, 0, 5)
+		# reset
+		eqn.kappa = kappa
+
+	def test_rk4_gradient_computation3(self):
+		n_pop = 7E6
+		sigma = 1/5.2
+		gamma = 1/2.28
+		beta = 2.13*gamma
+		kappa = 1.2
+		tau = 14
+		eqn = Seir(beta, sigma, gamma, kappa, tau)
+
+		ti = 0
+		tf = 20
+		n_steps = 2*tf
+		rk = RKSolver(ti, tf, n_steps)
+		rk.equation = eqn
+
+		u0 = np.array([n_pop - 1, 0, 1, 0])
+		u0 /= n_pop
+		du0_dp = np.zeros((eqn.n_components(), eqn.n_parameters()))
+		rk.set_initial_condition(u0, du0_dp)
+		rk.set_output_gradient_flag(True)
+
+		rk.solve()
+		(u, du_dp) = rk.state()
+
+		rk.set_output_gradient_flag(False)
+
+		epsi = 0.001
+
+		# perturb beta0
+		eqn.beta = beta + epsi
+		rk.solve()
+		u_p1 = rk.state()
+
+		eqn.beta = beta - epsi
+		rk.solve()
+		u_m1 = rk.state()
+		diff = np.linalg.norm(du_dp[:,0] - (u_p1 - u_m1)/(2*epsi))/np.linalg.norm(u0)
+		np.testing.assert_almost_equal(diff, 0, 5)
+		# reset
+		eqn.beta = beta
+
+		# perturb sigma
+		eqn.sigma = sigma + epsi
+		rk.solve()
+		u_p1 = rk.state()
+
+		eqn.sigma = sigma - epsi
+		rk.solve()
+		u_m1 = rk.state()
+		diff = np.linalg.norm(du_dp[:,1] - (u_p1 - u_m1)/(2*epsi))/np.linalg.norm(u0)
+		np.testing.assert_almost_equal(diff, 0, 5)
+		# reset
+		eqn.sigma = sigma
+
+		# perturb gamma
+		eqn.gamma = gamma + epsi
+		rk.solve()
+		u_p1 = rk.state()
+
+		eqn.gamma = gamma - epsi
+		rk.solve()
+		u_m1 = rk.state()
+		diff = np.linalg.norm(du_dp[:,2] - (u_p1 - u_m1)/(2*epsi))/np.linalg.norm(u0)
+		np.testing.assert_almost_equal(diff, 0, 5)
+		# reset
+		eqn.gamma = gamma
+
+		# perturb kappa
+		eqn.kappa = kappa + epsi
+		rk.solve()
+		u_p1 = rk.state()
+
+		eqn.kappa = kappa - epsi
+		rk.solve()
+		u_m1 = rk.state()
+		diff = np.linalg.norm(du_dp[:,3] - (u_p1 - u_m1)/(2*epsi))/np.linalg.norm(u0)
+		np.testing.assert_almost_equal(diff, 0, 5)
+		# reset
+		eqn.kappa = kappa
 
 
 class SimpleEquation(Equation):

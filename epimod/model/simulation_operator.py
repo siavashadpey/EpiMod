@@ -95,8 +95,12 @@ class ModelGradOp(theano.Op):
 
 	def perform(self, node, inputs, outputs):
 		x = inputs[0]
+		#print(x.shape[0])
 		dL_df = inputs[1]
 		df_dparams = self._cached_sim(x)[1]
 		out = outputs[0]
-		grad = dL_df @ df_dparams[0,:,:].T
+		grad = dL_df @ df_dparams[0,:,0:].T
+		#print(grad.shape)
+		grad = grad[:,0:x.shape[0]] # comment out 
+		#print(grad.shape)
 		out[0] = grad[0]
