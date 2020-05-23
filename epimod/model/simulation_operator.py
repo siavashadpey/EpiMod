@@ -8,9 +8,6 @@ import theano as theano
 from epimod.solver.ode_solver.ode_solver import ODESolver
 from epimod.eqn.equation import Equation
 
-theano.config.floatX = 'float64'
-THEANO_FLAGS='optimizer=fast_compile'
-
 class CachedSimulation(metaclass=ABCMeta):
 	def __init__(self, ode_solver):
 		self._ode_solver = ode_solver
