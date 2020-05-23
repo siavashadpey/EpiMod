@@ -13,8 +13,10 @@ class Equation(metaclass=ABCMeta):
 	def n_outputs(self):
 		return self._n_outputs	
 	
+	@abstractmethod
 	def source(self, t, u, is_grad_needed):
 		pass
 
-	def outputs(self, t, u, du_dp):
+	@abstractmethod
+	def output(self, t, u, du_dp):
 		pass

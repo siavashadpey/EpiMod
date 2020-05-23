@@ -166,5 +166,8 @@ class SimpleEquation(Equation):
 		dr_dp = 3*self._theta**2*u
 		return (r, dr_du, dr_dp)
 
+	def output(self, t, u, du_dp):
+		pass
+
 if __name__ == '__main__':
 	unittest.main()

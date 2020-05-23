@@ -10,7 +10,6 @@ class RKSolver(ODESolver):
 
 	def solve(self):
 		is_output_computed = self._is_output_stored
-
 		# lambda functions for residual computation
 		resfun = lambda t, state: self._equation.source(t, state, self._is_output_grad_needed)
 
@@ -18,7 +17,6 @@ class RKSolver(ODESolver):
 		self._state = np.copy(self._initial_state)
 		self._dstate_dp = np.copy(self._initial_dstate_dp)
 		self._time = self._initial_time
-
 		# initial output
 		if is_output_computed:
 			if self._is_output_grad_needed:
@@ -29,9 +27,9 @@ class RKSolver(ODESolver):
 			if self._is_output_stored:
 				n = math.floor(self._n_steps/self._output_frequency) + 1
 				self._outputs_array = np.zeros((self._equation.n_outputs(), n))
-				self._time_array = np.zeros((n,))
-				self._outputs_array[:,0] = self._outputs
+				self._time_array = np.zeros((n))
 				self._time_array[0] = self._time
+				self._outputs_array[:,0] = self._outputs
 				if self._is_output_grad_needed:
 					self._doutputs_dp_array = np.zeros((self._equation.n_outputs(), self._equation.n_parameters(), n))
 					self._doutputs_dp_array[:,:,0] = self._doutputs_dp
@@ -50,9 +48,9 @@ class RKSolver(ODESolver):
 						self._outputs = self._equation.output(self._time, self._state)
 
 					if self._is_output_stored:
-						i = math.floor(istep/self._output_frequency) + 1
-						self._outputs_array[:,i] = self._outputs
+						i = math.floor(istep/self._output_frequency)
 						self._time_array[i] = self._time
+						self._outputs_array[:,i] = self._outputs
 						if self._is_output_grad_needed:
 							self._doutputs_dp_array[:,:,i] = self._doutputs_dp
 
@@ -63,7 +61,7 @@ class RKSolver(ODESolver):
 			k2 = dt*resfun(t + 0.5*dt, u + 0.5*k1)
 			k3 = dt*resfun(t + 0.5*dt, u + 0.5*k2)
 			k4 = dt*resfun(t + dt, u + k3)
-			u += 1/6*(k1 + 2*k2 + 2*k3 + k4)
+			u += 1./6.*(k1 + 2.*k2 + 2.*k3 + k4)
 			return (u, None)
 		
 		(r1, dr1du, dr1dp) = resfun(t, u)
@@ -74,13 +72,14 @@ class RKSolver(ODESolver):
 		k3 = dt*r3
 		(r4, dr4du, dr4dp) = resfun(t + dt, u + k3)
 		k4 = dt*r4
-		u += 1/6*(k1 + 2*k2 + 2*k3 + k4)
-		
+		#print(u)
+		#print(k1, k2, k3, k4)
+		u += 1./6.*(k1 + 2.*k2 + 2.*k3 + k4)
 		# gradient computation
 		dk1dp = dt*(dr1dp + dr1du@dudp)
 		dk2dp = dt*(dr2dp + dr2du@(dudp + 0.5*dk1dp))
 		dk3dp = dt*(dr3dp + dr3du@(dudp + 0.5*dk2dp))
 		dk4dp = dt*(dr4dp + dr4du@(dudp + dk3dp))
-		dudp += 1/6*(dk1dp + 2*dk2dp + 2*dk3dp + dk4dp)
+		dudp += 1./6.*(dk1dp + 2.*dk2dp + 2.*dk3dp + dk4dp)
 
 		return (u, dudp)
