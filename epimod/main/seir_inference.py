@@ -13,8 +13,6 @@ from epimod.model.simulation_operator import ModelGradOp
 from epimod.eqn.seir import Seir
 from epimod.solver.ode_solver.rk_solver import RKSolver
 
-theano.config.exception_verbosity= 'high'
-
 class CachedSEIRSimulation(CachedSimulation):
 	def _update_parameters(self):
 		(beta, sigma, gamma) = np.array(self._eqn_parameters, dtype=np.float64)

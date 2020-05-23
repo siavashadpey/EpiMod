@@ -8,9 +8,6 @@ import theano as theano
 from epimod.solver.ode_solver.ode_solver import ODESolver
 from epimod.eqn.equation import Equation
 
-theano.config.floatX = 'float64'
-THEANO_FLAGS='optimizer=fast_compile'
-
 class CachedSimulation(metaclass=ABCMeta):
 	def __init__(self, ode_solver):
 		self._ode_solver = ode_solver
@@ -98,8 +95,12 @@ class ModelGradOp(theano.Op):
 
 	def perform(self, node, inputs, outputs):
 		x = inputs[0]
+		#print(x.shape[0])
 		dL_df = inputs[1]
 		df_dparams = self._cached_sim(x)[1]
 		out = outputs[0]
-		grad = dL_df @ df_dparams[0,:,:].T
+		grad = dL_df @ df_dparams[0,:,0:].T
+		#print(grad.shape)
+		grad = grad[:,0:x.shape[0]] # comment out 
+		#print(grad.shape)
 		out[0] = grad[0]
