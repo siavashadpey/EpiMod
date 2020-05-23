@@ -68,7 +68,6 @@ class TestModelOp(utt.InferShapeTester):
   							 6.39207233e-07])
 		assert np.allclose(out_act, out)
 
-	# Currently not working, but we test the GradOp individually
 	def test_grad(self):
 		s_val = 1./5.2 
 		g_val = 1./2.28
