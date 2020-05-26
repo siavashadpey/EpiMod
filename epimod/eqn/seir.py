@@ -106,11 +106,27 @@ class Seir(Equation):
 		return (u[2], du_dp[2,:])
 
 	@staticmethod
-	def _compute_beta(beta0, kappa, tau, t):
-		dt = t - tau
-		if dt <= 0:
-			return (beta0, 1, 0)
+	def _compute_beta(theta0, theta1, tau, t):
+		# beta = func(beta0, kappa; t, tau)
+		# returns beta, dbeta_theta0, dbeta_dtheta1
+		#dt = t - tau
+		#if dt <= 0:
+		#	return (theta0, 1, 0)
+		#else:
+		#	return(theta1*theta0, theta1, theta0)
+			#exp = math.exp(-theta1*dt)
+			#return (theta0*exp, exp, -theta0*exp*dt)
+		dt = 5.
+		if t <= tau:
+			return (theta0, 1, 0)
+		elif t >= tau + dt:
+			return (theta1, 0, 1)
+		elif t > tau and t < tau + dt:
+			ratio = (t-tau)/dt
+			return (theta0 + (theta1 - theta0)*ratio, 1. - ratio, ratio)
+
 		else:
-			exp = math.exp(-kappa*dt)
-			return (beta0*exp, exp, -beta0*exp*dt)
+			error("error in seir.compute_beta")
+
+
 

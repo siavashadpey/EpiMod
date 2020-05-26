@@ -1,979 +1,979 @@
-# source: https://github.com/samayo/country-json
+# source: https://github.com/samayo/region-json
 [
     {
-        "country": "Afghanistan",
+        "region": "Afghanistan",
         "population": "35530081"
     },
     {
-        "country": "Albania",
+        "region": "Albania",
         "population": "2930187"
     },
     {
-        "country": "Algeria",
+        "region": "Algeria",
         "population": "41318142"
     },
     {
-        "country": "American Samoa",
+        "region": "American Samoa",
         "population": "55641"
     },
     {
-        "country": "Andorra",
+        "region": "Andorra",
         "population": "76965"
     },
     {
-        "country": "Angola",
+        "region": "Angola",
         "population": "29784193"
     },
     {
-        "country": "Anguilla",
+        "region": "Anguilla",
         "population": "14909"
     },
     {
-        "country": "Antarctica",
+        "region": "Antarctica",
         "population": null
     },
     {
-        "country": "Antigua and Barbuda",
+        "region": "Antigua and Barbuda",
         "population": "102012"
     },
     {
-        "country": "Argentina",
+        "region": "Argentina",
         "population": "44271041"
     },
     {
-        "country": "Armenia",
+        "region": "Armenia",
         "population": "2930450"
     },
     {
-        "country": "Aruba",
+        "region": "Aruba",
         "population": "105264"
     },
     {
-        "country": "Australia",
+        "region": "Australia",
         "population": "24450561"
     },
     {
-        "country": "Austria",
+        "region": "Austria",
         "population": "8735453"
     },
     {
-        "country": "Azerbaijan",
+        "region": "Azerbaijan",
         "population": "9827589"
     },
     {
-        "country": "Bahamas",
+        "region": "Bahamas",
         "population": "395361"
     },
     {
-        "country": "Bahrain",
+        "region": "Bahrain",
         "population": "1492584"
     },
     {
-        "country": "Bangladesh",
+        "region": "Bangladesh",
         "population": "164669751"
     },
     {
-        "country": "Barbados",
+        "region": "Barbados",
         "population": "285719"
     },
     {
-        "country": "Belarus",
+        "region": "Belarus",
         "population": "9468338"
     },
     {
-        "country": "Belgium",
+        "region": "Belgium",
         "population": "11429336"
     },
     {
-        "country": "Belize",
+        "region": "Belize",
         "population": "374681"
     },
     {
-        "country": "Benin",
+        "region": "Benin",
         "population": "11175692"
     },
     {
-        "country": "Bermuda",
+        "region": "Bermuda",
         "population": "61349"
     },
     {
-        "country": "Bhutan",
+        "region": "Bhutan",
         "population": "807610"
     },
     {
-        "country": "Bolivia",
+        "region": "Bolivia",
         "population": "11051600"
     },
     {
-        "country": "Bosnia and Herzegovina",
+        "region": "Bosnia and Herzegovina",
         "population": "3507017"
     },
     {
-        "country": "Botswana",
+        "region": "Botswana",
         "population": "2291661"
     },
     {
-        "country": "Bouvet Island",
+        "region": "Bouvet Island",
         "population": null
     },
     {
-        "country": "Brazil",
+        "region": "Brazil",
         "population": "209288278"
     },
     {
-        "country": "British Indian Ocean Territory",
+        "region": "British Indian Ocean Territory",
         "population": null
     },
     {
-        "country": "Brunei",
+        "region": "Brunei",
         "population": "428697"
     },
     {
-        "country": "Bulgaria",
+        "region": "Bulgaria",
         "population": "7084571"
     },
     {
-        "country": "Burkina Faso",
+        "region": "Burkina Faso",
         "population": "19193382"
     },
     {
-        "country": "Burundi",
+        "region": "Burundi",
         "population": "10864245"
     },
     {
-        "country": "Cambodia",
+        "region": "Cambodia",
         "population": "16005373"
     },
     {
-        "country": "Cameroon",
+        "region": "Cameroon",
         "population": "24053727"
     },
     {
-        "country": "Canada",
+        "region": "Canada",
         "population": "36624199"
     },
     {
-        "country": "Cape Verde",
+        "region": "Cape Verde",
         "population": "546388"
     },
     {
-        "country": "Cayman Islands",
+        "region": "Cayman Islands",
         "population": "61559"
     },
     {
-        "country": "Central African Republic",
+        "region": "Central African Republic",
         "population": "4659080"
     },
     {
-        "country": "Chad",
+        "region": "Chad",
         "population": "14899994"
     },
     {
-        "country": "Chile",
+        "region": "Chile",
         "population": "18054726"
     },
     {
-        "country": "China",
+        "region": "China",
         "population": "1409517397"
     },
     {
-        "country": "Christmas Island",
+        "region": "Christmas Island",
         "population": "2500"
     },
     {
-        "country": "Cocos (Keeling) Islands",
+        "region": "Cocos (Keeling) Islands",
         "population": "600"
     },
     {
-        "country": "Colombia",
+        "region": "Colombia",
         "population": "49065615"
     },
     {
-        "country": "Comoros",
+        "region": "Comoros",
         "population": "813912"
     },
     {
-        "country": "Congo",
+        "region": "Congo",
         "population": "5260750"
     },
     {
-        "country": "Cook Islands",
+        "region": "Cook Islands",
         "population": "17380"
     },
     {
-        "country": "Costa Rica",
+        "region": "Costa Rica",
         "population": "4905769"
     },
     {
-        "country": "Croatia",
+        "region": "Croatia",
         "population": "4189353"
     },
     {
-        "country": "Cuba",
+        "region": "Cuba",
         "population": "11484636"
     },
     {
-        "country": "Cyprus",
+        "region": "Cyprus",
         "population": "1179551"
     },
     {
-        "country": "Czech Republic",
+        "region": "Czech Republic",
         "population": "10618303"
     },
     {
-        "country": "Denmark",
+        "region": "Denmark",
         "population": "5733551"
     },
     {
-        "country": "Djibouti",
+        "region": "Djibouti",
         "population": "956985"
     },
     {
-        "country": "Dominica",
+        "region": "Dominica",
         "population": "73925"
     },
     {
-        "country": "Dominican Republic",
+        "region": "Dominican Republic",
         "population": "10766998"
     },
     {
-        "country": "East Timor",
+        "region": "East Timor",
         "population": "1296311"
     },
     {
-        "country": "Ecuador",
+        "region": "Ecuador",
         "population": "16624858"
     },
     {
-        "country": "Egypt",
+        "region": "Egypt",
         "population": "97553151"
     },
     {
-        "country": "El Salvador",
+        "region": "El Salvador",
         "population": "6377853"
     },
     {
-        "country": "England",
+        "region": "England",
         "population": null
     },
     {
-        "country": "Equatorial Guinea",
+        "region": "Equatorial Guinea",
         "population": "1267689"
     },
     {
-        "country": "Eritrea",
+        "region": "Eritrea",
         "population": "5068831"
     },
     {
-        "country": "Estonia",
+        "region": "Estonia",
         "population": "1309632"
     },
     {
-        "country": "Ethiopia",
+        "region": "Ethiopia",
         "population": "104957438"
     },
     {
-        "country": "Falkland Islands",
+        "region": "Falkland Islands",
         "population": "2910"
     },
     {
-        "country": "Faroe Islands",
+        "region": "Faroe Islands",
         "population": "49290"
     },
     {
-        "country": "Fiji Islands",
+        "region": "Fiji Islands",
         "population": "905502"
     },
     {
-        "country": "Finland",
+        "region": "Finland",
         "population": "5523231"
     },
     {
-        "country": "France",
+        "region": "France",
         "population": "64979548"
     },
     {
-        "country": "French Guiana",
+        "region": "French Guiana",
         "population": "282731"
     },
     {
-        "country": "French Polynesia",
+        "region": "French Polynesia",
         "population": "283007"
     },
     {
-        "country": "French Southern territories",
+        "region": "French Southern territories",
         "population": null
     },
     {
-        "country": "Gabon",
+        "region": "Gabon",
         "population": "2025137"
     },
     {
-        "country": "Gambia",
+        "region": "Gambia",
         "population": "2100568"
     },
     {
-        "country": "Georgia",
+        "region": "Georgia",
         "population": "3912061"
     },
     {
-        "country": "Germany",
+        "region": "Germany",
         "population": "82114224"
     },
     {
-        "country": "Ghana",
+        "region": "Ghana",
         "population": "28833629"
     },
     {
-        "country": "Gibraltar",
+        "region": "Gibraltar",
         "population": "34571"
     },
     {
-        "country": "Greece",
+        "region": "Greece",
         "population": "11159773"
     },
     {
-        "country": "Greenland",
+        "region": "Greenland",
         "population": "56480"
     },
     {
-        "country": "Grenada",
+        "region": "Grenada",
         "population": "107825"
     },
     {
-        "country": "Guadeloupe",
+        "region": "Guadeloupe",
         "population": "449568"
     },
     {
-        "country": "Guam",
+        "region": "Guam",
         "population": "164229"
     },
     {
-        "country": "Guatemala",
+        "region": "Guatemala",
         "population": "16913503"
     },
     {
-        "country": "Guinea",
+        "region": "Guinea",
         "population": "12717176"
     },
     {
-        "country": "Guinea-Bissau",
+        "region": "Guinea-Bissau",
         "population": "1861283"
     },
     {
-        "country": "Guyana",
+        "region": "Guyana",
         "population": "777859"
     },
     {
-        "country": "Haiti",
+        "region": "Haiti",
         "population": "10981229"
     },
     {
-        "country": "Heard Island and McDonald Islands",
+        "region": "Heard Island and McDonald Islands",
         "population": null
     },
     {
-        "country": "Holy See (Vatican City State)",
+        "region": "Holy See (Vatican City State)",
         "population": "1000"
     },
     {
-        "country": "Honduras",
+        "region": "Honduras",
         "population": "9265067"
     },
     {
-        "country": "Hong Kong",
+        "region": "Hong Kong",
         "population": "7364883"
     },
     {
-        "country": "Hungary",
+        "region": "Hungary",
         "population": "9721559"
     },
     {
-        "country": "Iceland",
+        "region": "Iceland",
         "population": "335025"
     },
     {
-        "country": "India",
+        "region": "India",
         "population": "1339180127"
     },
     {
-        "country": "Indonesia",
+        "region": "Indonesia",
         "population": "263991379"
     },
     {
-        "country": "Iran",
+        "region": "Iran",
         "population": "81162788"
     },
     {
-        "country": "Iraq",
+        "region": "Iraq",
         "population": "38274618"
     },
     {
-        "country": "Ireland",
+        "region": "Ireland",
         "population": "4761657"
     },
     {
-        "country": "Israel",
+        "region": "Israel",
         "population": "8321570"
     },
     {
-        "country": "Italy",
+        "region": "Italy",
         "population": "59359900"
     },
     {
-        "country": "Ivory Coast",
+        "region": "Ivory Coast",
         "population": "24294750"
     },
     {
-        "country": "Jamaica",
+        "region": "Jamaica",
         "population": "2890299"
     },
     {
-        "country": "Japan",
+        "region": "Japan",
         "population": "127484450"
     },
     {
-        "country": "Jordan",
+        "region": "Jordan",
         "population": "9702353"
     },
     {
-        "country": "Kazakhstan",
+        "region": "Kazakhstan",
         "population": "18204499"
     },
     {
-        "country": "Kenya",
+        "region": "Kenya",
         "population": "49699862"
     },
     {
-        "country": "Kiribati",
+        "region": "Kiribati",
         "population": "116398"
     },
     {
-        "country": "Kuwait",
+        "region": "Kuwait",
         "population": "4136528"
     },
     {
-        "country": "Kyrgyzstan",
+        "region": "Kyrgyzstan",
         "population": "6045117"
     },
     {
-        "country": "Laos",
+        "region": "Laos",
         "population": "6858160"
     },
     {
-        "country": "Latvia",
+        "region": "Latvia",
         "population": "1949670"
     },
     {
-        "country": "Lebanon",
+        "region": "Lebanon",
         "population": "6082357"
     },
     {
-        "country": "Lesotho",
+        "region": "Lesotho",
         "population": "2233339"
     },
     {
-        "country": "Liberia",
+        "region": "Liberia",
         "population": "4731906"
     },
     {
-        "country": "Libyan Arab Jamahiriya",
+        "region": "Libyan Arab Jamahiriya",
         "population": "5605000"
     },
     {
-        "country": "Liechtenstein",
+        "region": "Liechtenstein",
         "population": "37922"
     },
     {
-        "country": "Lithuania",
+        "region": "Lithuania",
         "population": "2890297"
     },
     {
-        "country": "Luxembourg",
+        "region": "Luxembourg",
         "population": "583455"
     },
     {
-        "country": "Macao",
+        "region": "Macao",
         "population": "473000"
     },
     {
-        "country": "North Macedonia",
+        "region": "North Macedonia",
         "population": "2024000"
     },
     {
-        "country": "Madagascar",
+        "region": "Madagascar",
         "population": "25570895"
     },
     {
-        "country": "Malawi",
+        "region": "Malawi",
         "population": "18622104"
     },
     {
-        "country": "Malaysia",
+        "region": "Malaysia",
         "population": "31624264"
     },
     {
-        "country": "Maldives",
+        "region": "Maldives",
         "population": "436330"
     },
     {
-        "country": "Mali",
+        "region": "Mali",
         "population": "18541980"
     },
     {
-        "country": "Malta",
+        "region": "Malta",
         "population": "430835"
     },
     {
-        "country": "Marshall Islands",
+        "region": "Marshall Islands",
         "population": "53127"
     },
     {
-        "country": "Martinique",
+        "region": "Martinique",
         "population": "384896"
     },
     {
-        "country": "Mauritania",
+        "region": "Mauritania",
         "population": "4420184"
     },
     {
-        "country": "Mauritius",
+        "region": "Mauritius",
         "population": "1265138"
     },
     {
-        "country": "Mayotte",
+        "region": "Mayotte",
         "population": "253045"
     },
     {
-        "country": "Mexico",
+        "region": "Mexico",
         "population": "129163276"
     },
     {
-        "country": "Micronesia, Federated States of",
+        "region": "Micronesia, Federated States of",
         "population": null
     },
     {
-        "country": "Moldova",
+        "region": "Moldova",
         "population": "4051212"
     },
     {
-        "country": "Monaco",
+        "region": "Monaco",
         "population": "38695"
     },
     {
-        "country": "Mongolia",
+        "region": "Mongolia",
         "population": "3075647"
     },
     {
-        "country": "Montenegro",
+        "region": "Montenegro",
         "population": "631219"
     },
     {
-        "country": "Montserrat",
+        "region": "Montserrat",
         "population": "5177"
     },
     {
-        "country": "Morocco",
+        "region": "Morocco",
         "population": "35739580"
     },
     {
-        "country": "Mozambique",
+        "region": "Mozambique",
         "population": "29668834"
     },
     {
-        "country": "Myanmar",
+        "region": "Myanmar",
         "population": "53370609"
     },
     {
-        "country": "Namibia",
+        "region": "Namibia",
         "population": "2533794"
     },
     {
-        "country": "Nauru",
+        "region": "Nauru",
         "population": "11359"
     },
     {
-        "country": "Nepal",
+        "region": "Nepal",
         "population": "29304998"
     },
     {
-        "country": "Netherlands",
+        "region": "Netherlands",
         "population": "17035938"
     },
     {
-        "country": "Netherlands Antilles",
+        "region": "Netherlands Antilles",
         "population": "217000"
     },
     {
-        "country": "New Caledonia",
+        "region": "New Caledonia",
         "population": "276255"
     },
     {
-        "country": "New Zealand",
+        "region": "New Zealand",
         "population": "4705818"
     },
     {
-        "country": "Nicaragua",
+        "region": "Nicaragua",
         "population": "6217581"
     },
     {
-        "country": "Niger",
+        "region": "Niger",
         "population": "21477348"
     },
     {
-        "country": "Nigeria",
+        "region": "Nigeria",
         "population": "190886311"
     },
     {
-        "country": "Niue",
+        "region": "Niue",
         "population": "1618"
     },
     {
-        "country": "Norfolk Island",
+        "region": "Norfolk Island",
         "population": "2000"
     },
     {
-        "country": "North Korea",
+        "region": "North Korea",
         "population": "25490965"
     },
     {
-        "country": "Northern Ireland",
+        "region": "Northern Ireland",
         "population": null
     },
     {
-        "country": "Northern Mariana Islands",
+        "region": "Northern Mariana Islands",
         "population": "55144"
     },
     {
-        "country": "Norway",
+        "region": "Norway",
         "population": "5305383"
     },
     {
-        "country": "Oman",
+        "region": "Oman",
         "population": "4636262"
     },
     {
-        "country": "Pakistan",
+        "region": "Pakistan",
         "population": "197015955"
     },
     {
-        "country": "Palau",
+        "region": "Palau",
         "population": "21729"
     },
     {
-        "country": "Palestine",
+        "region": "Palestine",
         "population": "4920724"
     },
     {
-        "country": "Panama",
+        "region": "Panama",
         "population": "4098587"
     },
     {
-        "country": "Papua New Guinea",
+        "region": "Papua New Guinea",
         "population": "8251162"
     },
     {
-        "country": "Paraguay",
+        "region": "Paraguay",
         "population": "6811297"
     },
     {
-        "country": "Peru",
+        "region": "Peru",
         "population": "32165485"
     },
     {
-        "country": "Philippines",
+        "region": "Philippines",
         "population": "104918090"
     },
     {
-        "country": "Pitcairn",
+        "region": "Pitcairn",
         "population": "50"
     },
     {
-        "country": "Poland",
+        "region": "Poland",
         "population": "38170712"
     },
     {
-        "country": "Portugal",
+        "region": "Portugal",
         "population": "10329506"
     },
     {
-        "country": "Puerto Rico",
+        "region": "Puerto Rico",
         "population": "3663131"
     },
     {
-        "country": "Qatar",
+        "region": "Qatar",
         "population": "2639211"
     },
     {
-        "country": "Reunion",
+        "region": "Reunion",
         "population": "699000"
     },
     {
-        "country": "Romania",
+        "region": "Romania",
         "population": "19679306"
     },
     {
-        "country": "Russian Federation",
+        "region": "Russian Federation",
         "population": "143989754"
     },
     {
-        "country": "Rwanda",
+        "region": "Rwanda",
         "population": "12208407"
     },
     {
-        "country": "Saint Helena",
+        "region": "Saint Helena",
         "population": "4049"
     },
     {
-        "country": "Saint Kitts and Nevis",
+        "region": "Saint Kitts and Nevis",
         "population": "55345"
     },
     {
-        "country": "Saint Lucia",
+        "region": "Saint Lucia",
         "population": "178844"
     },
     {
-        "country": "Saint Pierre and Miquelon",
+        "region": "Saint Pierre and Miquelon",
         "population": "6320"
     },
     {
-        "country": "Saint Vincent and the Grenadines",
+        "region": "Saint Vincent and the Grenadines",
         "population": "109897"
     },
     {
-        "country": "Samoa",
+        "region": "Samoa",
         "population": "196440"
     },
     {
-        "country": "San Marino",
+        "region": "San Marino",
         "population": "33400"
     },
     {
-        "country": "Sao Tome and Principe",
+        "region": "Sao Tome and Principe",
         "population": "204327"
     },
     {
-        "country": "Saudi Arabia",
+        "region": "Saudi Arabia",
         "population": "32938213"
     },
     {
-        "country": "Scotland",
+        "region": "Scotland",
         "population": null
     },
     {
-        "country": "Senegal",
+        "region": "Senegal",
         "population": "15850567"
     },
     {
-        "country": "Seychelles",
+        "region": "Seychelles",
         "population": "94737"
     },
     {
-        "country": "Sierra Leone",
+        "region": "Sierra Leone",
         "population": "7557212"
     },
     {
-        "country": "Singapore",
+        "region": "Singapore",
         "population": "5708844"
     },
     {
-        "country": "Slovakia",
+        "region": "Slovakia",
         "population": "5447662"
     },
     {
-        "country": "Slovenia",
+        "region": "Slovenia",
         "population": "2079976"
     },
     {
-        "country": "Solomon Islands",
+        "region": "Solomon Islands",
         "population": "611343"
     },
     {
-        "country": "Somalia",
+        "region": "Somalia",
         "population": "14742523"
     },
     {
-        "country": "South Africa",
+        "region": "South Africa",
         "population": "56717156"
     },
     {
-        "country": "South Georgia and the South Sandwich Islands",
+        "region": "South Georgia and the South Sandwich Islands",
         "population": null
     },
     {
-        "country": "South Korea",
+        "region": "South Korea",
         "population": "50982212"
     },
     {
-        "country": "South Sudan",
+        "region": "South Sudan",
         "population": "12575714"
     },
     {
-        "country": "Spain",
+        "region": "Spain",
         "population": "46354321"
     },
     {
-        "country": "SriLanka",
+        "region": "SriLanka",
         "population": "20876917"
     },
     {
-        "country": "Sudan",
+        "region": "Sudan",
         "population": "40533330"
     },
     {
-        "country": "Suriname",
+        "region": "Suriname",
         "population": "563402"
     },
     {
-        "country": "Svalbard and Jan Mayen",
+        "region": "Svalbard and Jan Mayen",
         "population": "3200"
     },
     {
-        "country": "Swaziland",
+        "region": "Swaziland",
         "population": "1008000"
     },
     {
-        "country": "Sweden",
+        "region": "Sweden",
         "population": "9910701"
     },
     {
-        "country": "Switzerland",
+        "region": "Switzerland",
         "population": "8476005"
     },
     {
-        "country": "Syria",
+        "region": "Syria",
         "population": "18269868"
     },
     {
-        "country": "Tajikistan",
+        "region": "Tajikistan",
         "population": "8921343"
     },
     {
-        "country": "Tanzania",
+        "region": "Tanzania",
         "population": "57310019"
     },
     {
-        "country": "Thailand",
+        "region": "Thailand",
         "population": "69037513"
     },
     {
-        "country": "The Democratic Republic of Congo",
+        "region": "The Democratic Republic of Congo",
         "population": null
     },
     {
-        "country": "Togo",
+        "region": "Togo",
         "population": "7797694"
     },
     {
-        "country": "Tokelau",
+        "region": "Tokelau",
         "population": "1300"
     },
     {
-        "country": "Tonga",
+        "region": "Tonga",
         "population": "108020"
     },
     {
-        "country": "Trinidad and Tobago",
+        "region": "Trinidad and Tobago",
         "population": "1369125"
     },
     {
-        "country": "Tunisia",
+        "region": "Tunisia",
         "population": "11532127"
     },
     {
-        "country": "Turkey",
+        "region": "Turkey",
         "population": "80745020"
     },
     {
-        "country": "Turkmenistan",
+        "region": "Turkmenistan",
         "population": "5758075"
     },
     {
-        "country": "Turks and Caicos Islands",
+        "region": "Turks and Caicos Islands",
         "population": "35446"
     },
     {
-        "country": "Tuvalu",
+        "region": "Tuvalu",
         "population": "11192"
     },
     {
-        "country": "Uganda",
+        "region": "Uganda",
         "population": "42862958"
     },
     {
-        "country": "Ukraine",
+        "region": "Ukraine",
         "population": "44222947"
     },
     {
-        "country": "United Arab Emirates",
+        "region": "United Arab Emirates",
         "population": "9400145"
     },
     {
-        "country": "United Kingdom",
+        "region": "United Kingdom",
         "population": "66181585"
     },
     {
-        "country": "United States",
+        "region": "United States",
         "population": "324459463"
     },
     {
-        "country": "United States Minor Outlying Islands",
+        "region": "United States Minor Outlying Islands",
         "population": null
     },
     {
-        "country": "Uruguay",
+        "region": "Uruguay",
         "population": "3456750"
     },
     {
-        "country": "Uzbekistan",
+        "region": "Uzbekistan",
         "population": "31910641"
     },
     {
-        "country": "Vanuatu",
+        "region": "Vanuatu",
         "population": "276244"
     },
     {
-        "country": "Venezuela",
+        "region": "Venezuela",
         "population": "31977065"
     },
     {
-        "country": "Vietnam",
+        "region": "Vietnam",
         "population": "95540800"
     },
     {
-        "country": "Virgin Islands, British",
+        "region": "Virgin Islands, British",
         "population": null
     },
     {
-        "country": "Virgin Islands, U.S.",
+        "region": "Virgin Islands, U.S.",
         "population": null
     },
     {
-        "country": "Wales",
+        "region": "Wales",
         "population": null
     },
     {
-        "country": "Wallis and Futuna",
+        "region": "Wallis and Futuna",
         "population": "11773"
     },
     {
-        "country": "Western Sahara",
+        "region": "Western Sahara",
         "population": "552628"
     },
     {
-        "country": "Yemen",
+        "region": "Yemen",
         "population": "28250420"
     },
     {
-        "country": "Yugoslavia",
+        "region": "Yugoslavia",
         "population": "10640000"
     },
     {
-        "country": "Zambia",
+        "region": "Zambia",
         "population": "17094130"
     },
     {
-        "country": "Zimbabwe",
+        "region": "Zimbabwe",
         "population": "16529904"
     }
 ]

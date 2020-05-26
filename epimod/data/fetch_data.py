@@ -45,7 +45,7 @@ def get_csv_data(regions=[], all_regions=False):
 					if i < len(entry_split) and entry_split[i].isnumeric():
 						regions_data[region][data_types[i]].append(int(entry_split[i]))
 					else:
-						regions_data[region][data_types[i]].append(float("nan"))
+						regions_data[region][data_types[i]].append(float('nan'))
 
 			print("done")
 		except:
