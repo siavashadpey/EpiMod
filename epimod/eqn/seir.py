@@ -120,10 +120,10 @@ class Seir(Equation):
 		if t <= tau:
 			return (theta0, 1, 0)
 		elif t >= tau + dt:
-			return (theta1, 0, 1)
+			return (theta1*theta2, 0, 1)
 		elif t > tau and t < tau + dt:
 			ratio = (t-tau)/dt
-			return (theta0 + (theta1 - theta0)*ratio, 1. - ratio, ratio)
+			return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio)
 
 		else:
 			error("error in seir.compute_beta")
