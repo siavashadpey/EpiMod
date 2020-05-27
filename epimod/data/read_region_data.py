@@ -11,18 +11,21 @@ def read_region_data(folder, region):
 
 	# read population
 	file_pop = folder + os.path.sep + "population.json"
-	n_pop = tools.get_population(file_pop, region)
+	n_pop = int(tools.get_population(file_pop, region))
 
 	# read region's COVID-19 data
 	file_data = folder + os.path.sep + "today" + os.path.sep + str(region).lower() + ".txt"
-	df = pd.read_csv(file_data, na_values=" nan", index_col ="date", header=0, names = ["date", "day_count", "confirmed", "suspected", "cured", "deaths"])
+	df = pd.read_csv(file_data, na_values=" nan", index_col ="date", header=0, names = ["date", "day_count", "aggregate_cases", "suspected", "cured", "deaths"])
+
+	# drop rows with insufficient data
+	n_min = max(20., 2.E-6*n_pop) # min = 20 or 2/million
+	df = df[(df["aggregate_cases"] >= n_min).idxmax():]
 	
-	# format region's COVID-19 data
-	x = df["confirmed"].values
-	x[1:] = np.diff(df["confirmed"].values)
-	df.insert(loc=3, column="daily_confirmed", value=x)
+	# compute daily cases
+	x = np.diff(df["aggregate_cases"].values, prepend=0)
+	df.insert(loc=3, column="daily_cases", value=x)
 	x_ave = moving_average(x,n=7)
-	df.insert(loc=3, column="daily_averaged_confirmed", value=x_ave)
+	df.insert(loc=3, column="daily_averaged_cases", value=x_ave)
 
 	# read and format shutdown date
 	file_sd = folder + os.path.sep + "shutdown_dates.json"
@@ -32,8 +35,14 @@ def read_region_data(folder, region):
 	else:
 		shutdown_day = None
 	
+	# Initial condition for SEIR
+	S0 = n_pop - df.loc[df.index[0],"aggregate_cases"]
+	E0 = 0
+	R0 = df.loc[df.index[0],"cured"] - df.loc[df.index[0],"deaths"]
+	I0 = df.loc[df.index[0],"aggregate_cases"] - R0
+	IC = np.array([S0, E0, I0, R0])
 	# output necessary data
-	return (df["day_count"].values, df["daily_averaged_confirmed"].values, int(n_pop), int(shutdown_day), df["daily_confirmed"].values)
+	return (df["day_count"].values, df["daily_averaged_cases"].values, n_pop, int(shutdown_day), IC, df["daily_cases"].values)
 	
 def moving_average(x, n=5):
 	# x_ave[i] = 1/n sum_{j=0}^{n-1} x[i-j] and j <= i
@@ -58,7 +67,7 @@ def main():
 
 	folder = args.folder
 	region = args.region.lower()
-	(t, daily_smooth, n_pop, shutdown_day, daily) = read_region_data(folder, region)
+	(t, daily_smooth, n_pop, shutdown_day, IC, daily) = read_region_data(folder, region)
 
 	#print(n_pop)
 	#print(shutdown_day)

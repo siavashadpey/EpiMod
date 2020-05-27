@@ -23,6 +23,21 @@ class CachedSEIRSimulation(CachedSimulation):
 		eqn.gamma = gamma
 		eqn.kappa = kappa
 
+class RKSolverSeir(RKSolver):
+	def __init__(self, ti, tf, n_steps = 1):
+		super().__init__(ti, tf, n_steps)
+
+	def get_outputs(self):
+		outs = super().get_outputs()
+		if self._is_output_stored:
+			if self._is_output_grad_needed:
+				return (self._time_array, np.diff(outs[1], prepend=0), np.diff(outs[2], prepend=0))
+			else:
+				return (self._time_array, np.diff(outs[1], prepend=0))
+		else:
+			error("output is not stored")
+
+
 def main():
 
 	# observed data

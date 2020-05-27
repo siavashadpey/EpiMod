@@ -3,5 +3,13 @@
     {
         "region": "Canada",
         "start": "2020-03-18"
+    },
+    {
+        "region": "Quebec",
+        "start": "2020-03-24"
+    },
+    {
+        "region": "Switzerland",
+        "start": "2020-03-17"
     }
 ]
