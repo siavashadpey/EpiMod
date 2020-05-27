@@ -1,5 +1,7 @@
 import math
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 import theano as theano
@@ -37,109 +39,94 @@ class RKSolverSeir(RKSolver):
 		else:
 			error("output is not stored")
 
-
 def main():
 
 	# observed data
 	folder = "./data/"
 	region = "canada"
-	(t_obs, y_obs, n_pop, shutdown_day, _) = data_fetcher.read_region_data(folder, region)
-	y_obs = y_obs/n_pop
+	(t_obs, y_obs, n_pop, shutdown_day, u0, _) = data_fetcher.read_region_data(folder, region)
+	y_obs = y_obs.astype(np.float64)
+	u0 = u0.astype(np.float64)
+	#print(shutdown_day)
 
 	# set eqn
-	sigma0 = 1./5.2
-	gamma0 = 1./2.28
-	beta0 = 2.30*gamma0
-	kappa0 = 0.4
+	serial_period = 7.2
+	sigma0 = 1./1.3
+	gamma0 = 1./5 #2.28
+	#sigma0 = 1./(serial_period - 1./gamma0) #1.9 #5.2
+	beta0 = 2.45*gamma0/n_pop
+	kappa0 = 0.02
 
 	eqn = Seir()
 	eqn.tau = shutdown_day
-	# TODO: comment out
-	eqn.beta = beta0
-	eqn.sigma = sigma0
-	eqn.gamma = gamma0
-	eqn.kappa = kappa0
 	
 	# set ode solver
-	ti = 0
+	ti = t_obs[0]
 	tf = t_obs[-1]
 	n_steps = tf
-	rk = RKSolver(ti, tf, n_steps)
+	rk = RKSolverSeir(ti, tf, n_steps)
 	
 	rk.output_frequency = 1
 	rk.set_output_storing_flag(True)
 	rk.equation = eqn
 	
-	u0 = np.array([1 - y_obs[0], 0, y_obs[0], 0])
-	# TODO: uncomment
-	#du0_dp = np.zeros((eqn.n_components(), eqn.n_parameters()))
-	#rk.set_initial_condition(u0, du0_dp)
-	#rk.set_output_gradient_flag(True)
+	du0_dp = np.zeros(eqn.n_components(), eqn.n_components())
+	rk.set_initial_condition(u0, du0_dp)
+	rk.set_output_gradient_flag(True)
 
-	# TODO: comment out
-	rk.set_initial_condition(u0)
-	rk.set_output_gradient_flag(False)
-	rk.solve()
-	(_, y_sim) = rk.get_outputs()
-
-	# TODO: comment out
-	plt.plot(t_obs, y_obs*n_pop, 'x', color='b')
-	plt.plot(t_obs, y_sim[0,:]*n_pop, color='b', lw=2)
-
-	## sample posterior
-	#with pm.Model() as model:
-		## set prior distributions
-		## TODO: choose accurate priors
-		#beta  = pm.Uniform('beta',  lower = 0.7*beta0 , upper = 1.3*beta0 )
-		#sigma = pm.Uniform('sigma', lower = 0.7*sigma0, upper = 1.3*sigma0)
-		#gamma = pm.Uniform('gamma', lower = 0.7*gamma0, upper = 1.3*gamma0)
-		#kappa = pm.Uniform('kappa', lower = 0.5*kappa0, upper = 1.5*kappa0)
-		##sigma_normal = pm.Uniform('sigma_normal', lower = 0, upper = 0.1)
+	# sample posterior
+	with pm.Model() as model:
+		# set prior distributions
+		beta  = pm.Uniform('beta',  lower = 0.7*beta0 , upper = 1.3*beta0 )
+		sigma = pm.Uniform('sigma', lower = 0.8*sigma0, upper = 1.2*sigma0)
+		gamma = pm.Uniform('gamma', lower = 0.8*gamma0, upper = 1.2*gamma0)
+		kappa = pm.Uniform('kappa', lower = 0.01, upper = 0.2)
+		dispersion = pm.Uniform('dispersion', lower = 0.1, upper = 30.)
 	
-		## set cached_sim object
-		#cached_sim = CachedSEIRSimulation(rk)
+		# set cached_sim object
+		cached_sim = CachedSEIRSimulation(rk)
 	
-		## set theano model op object
-		#model = ModelOp(cached_sim)
+		# set theano model op object
+		model = ModelOp(cached_sim)
 	
-		## set likelihood distribution
-		##y_sim = pm.Normal('y_sim', mu=model((beta, sigma, gamma, kappa)), sigma=sigma_normal, observed=y_obs)
-		##y_sim = pm.NegativeBinomial('y_sim', mu=model((beta, sigma, gamma)), alpha= observed=y_obs)
+		# set likelihood distribution
+		y_sim = pm.Normal('y_sim', mu=model((beta, sigma, gamma, kappa)), sigma=dispersion, observed=y_obs)
+		#y_sim = pm.NegativeBinomial('y_sim', mu=model((beta, sigma, gamma)), alpha=dispersion, observed=y_obs)
 		#y_sim = pm.Poisson('y_sim', mu=model((beta, sigma, gamma, kappa)), observed=y_obs)
 	
 		## sample posterior distribution
-		#trace = pm.sample(draws=1500, tune=500, cores=5) # using NUTS sampling
+		trace = pm.sample(draws=200, tune=100, cores=2, chains=2, nuts_kwargs=dict(target_accept=0.9), init='adapt_diag') # using NUTS sampling
 	
-		## plot posterior distributions of all parameters
-		##cached_sim.set_gradient_flag(False)
-		#ppc = pm.sample_posterior_predictive(trace)
-		#data = az.from_pymc3(trace=trace, posterior_predictive=ppc)
-		#az.plot_posterior(data,  credible_interval = 0.95, figsize=(13,3))
-		#plt.savefig("fig_dist.pdf")
+		# plot posterior distributions of all parameters
+		#cached_sim.set_gradient_flag(False)
+		ppc = pm.sample_posterior_predictive(trace)
+		data = az.from_pymc3(trace=trace, posterior_predictive=ppc)
+		az.plot_posterior(data,  credible_interval = 0.95)
+		plt.savefig("fig_dist.pdf")
 	
 		## propagate uncertainty and make future predictions
-		#rk.final_time = tf + 7
-		#rk.n_steps = tf + 7
-		#ppc_pred = pm.sample_posterior_predictive(trace)
-		#ppc_samples = ppc_pred['y_sim']
-		#mean_ppc = ppc_samples.mean(axis=0)
-		#CriL_ppc = np.percentile(ppc_samples,q=2.5,axis=0)
-		#CriU_ppc = np.percentile(ppc_samples,q=97.5,axis=0)
+		rk.final_time = tf + 7
+		rk.n_steps = tf + 7
+		ppc_pred = pm.sample_posterior_predictive(trace)
+		ppc_samples = ppc_pred['y_sim']
+		mean_ppc = ppc_samples.mean(axis=0)
+		CriL_ppc = np.percentile(ppc_samples,q=2.5,axis=0)
+		CriU_ppc = np.percentile(ppc_samples,q=97.5,axis=0)
 
 	## plot t vs y_obs
-	#fig = plt.figure(figsize=(7, 7))
-	#ax = fig.add_subplot(111, xlabel='x', ylabel='y')
-	#ax.plot(t_obs, y_obs, 'x', label='sampled data')
+	fig = plt.figure(figsize=(7, 7))
+	ax = fig.add_subplot(111, xlabel='x', ylabel='y')
+	ax.plot(t_obs, y_obs, 'x', label='sampled data')
 	
 	## plot propagated uncertainty
-	#t_obs_ext = np.linspace(0,rk.final_time,num = rk.final_time + 1)
-	#plt.plot(t_obs_ext, mean_ppc[0,:], color='g', lw=2, label='mean of ppc')
-	#plt.plot(t_obs_ext, CriL_ppc[0,:], '--', lw=2, color='g', label='95% credible interval')
-	#plt.plot(t_obs_ext, CriU_ppc[0,:], '--', lw=2, color='g',)
-	#plt.legend(loc=0)
-	#plt.savefig("fig_sim.pdf")
+	t_obs_ext = np.linspace(0,rk.final_time,num = rk.final_time + 1)
+	plt.plot(t_obs_ext, mean_ppc[0,:], color='g', lw=2, label='mean of ppc')
+	plt.plot(t_obs_ext, CriL_ppc[0,:], '--', lw=2, color='g', label='95% credible interval')
+	plt.plot(t_obs_ext, CriU_ppc[0,:], '--', lw=2, color='g',)
+	plt.legend(loc=0)
+	plt.savefig("fig_sim.pdf")
 	
-	plt.show()
+	#plt.show()
 
 if __name__ == '__main__':
 	main()
