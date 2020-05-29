@@ -101,7 +101,7 @@ class Seir(Equation):
 		assert u.shape == (self._n_components,) , "u is not a vector of size n_components"
 
 		if du_dp is None:
-			return np.sum(u[1:], axis=0)
+			return np.sum(u[1:])
 
 		assert du_dp.shape == (self._n_components, self._n_parameters), "du_dp is not of size n_components x n_parameters"
 		return (np.sum(u[1:]), np.sum(du_dp[1:,:],axis=0))
