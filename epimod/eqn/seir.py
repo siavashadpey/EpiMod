@@ -38,7 +38,8 @@ class Seir(Equation):
 
 	@property
 	def gamma(self):
-		return self._gamma #1/gamma: infectious period
+		return self._gamma #1/gamma: infectious period 
+		# infectious period + latent/incubation period = serial period (interval between person A being infected and infecting person B)
 
 	@gamma.setter
 	def gamma(self, value):
@@ -72,7 +73,7 @@ class Seir(Equation):
 		(b, db0, dkappa) = Seir._compute_beta(self._beta0, self._kappa, self._tau, t)
 		s = self._sigma
 		g = self._gamma
-
+		#print(b)
 		f = np.array([
 			-b*S*I,
 			 b*S*I - s*E,
@@ -100,17 +101,32 @@ class Seir(Equation):
 		assert u.shape == (self._n_components,) , "u is not a vector of size n_components"
 
 		if du_dp is None:
-			return u[2]
+			return np.sum(u[1:])
 
 		assert du_dp.shape == (self._n_components, self._n_parameters), "du_dp is not of size n_components x n_parameters"
-		return (u[2], du_dp[2,:])
+		return (np.sum(u[1:]), np.sum(du_dp[1:,:],axis=0))
 
 	@staticmethod
-	def _compute_beta(beta0, kappa, tau, t):
+	def _compute_beta(theta0, theta1, tau, t):
+		# beta = func(beta0, kappa; t, tau)
+		# returns beta, dbeta_theta0, dbeta_dtheta1
 		dt = t - tau
 		if dt <= 0:
-			return (beta0, 1, 0)
+			return (theta0, 1, 0)
 		else:
-			exp = math.exp(-kappa*dt)
-			return (beta0*exp, exp, -beta0*exp*dt)
+			exp = math.exp(-theta1*dt)
+			return (theta0*exp, exp, -theta0*exp*dt)
+		#dt = 5.
+		#if t <= tau:
+		#	return (theta0, 1, 0)
+		#elif t >= tau + dt:
+		#	return (theta1*theta0, theta1, theta0)
+		#elif t > tau and t < tau + dt:
+		#	ratio = (t-tau)/dt
+		#	return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio)
+#
+		#else:
+		#	error("error in seir.compute_beta")
+
+
 

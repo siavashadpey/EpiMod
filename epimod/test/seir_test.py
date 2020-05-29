@@ -133,7 +133,7 @@ class TestSeir(unittest.TestCase):
 		gamma = 4.13
 		kappa = 1.2
 		tau = 1
-		t = tau + 2
+		t = tau + 7
 
 		eqn = Seir(beta0, sigma, gamma, kappa, tau)
 		
@@ -176,7 +176,7 @@ class TestSeir(unittest.TestCase):
 		s = eqn.source(u=u)
 		f = eqn.output(u=u)
 
-		self.assertAlmostEqual(f, u[2], decimal)
+		self.assertAlmostEqual(f, u[1]+u[2]+u[3], decimal)
 
 	def test_output_param_grad(self):
 		u = np.array([100., 90., 110., 220.])
@@ -186,7 +186,7 @@ class TestSeir(unittest.TestCase):
 		du_dp = np.random.random((eqn.n_components(), eqn.n_parameters()))
 		(f, df_dp) = eqn.output(u=u, du_dp = du_dp)
 
-		np.testing.assert_almost_equal(df_dp, du_dp[2,:], decimal)
+		np.testing.assert_almost_equal(df_dp, du_dp[1,:] + du_dp[2,:] + du_dp[3,:], decimal)
 
 
 if __name__ == '__main__':

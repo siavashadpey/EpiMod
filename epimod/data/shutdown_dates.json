@@ -1,0 +1,49 @@
+# currently, manually entering data
+# Canada: https://www.mccarthy.ca/en/insights/articles/covid-19-emergency-measures-tracker
+# Europe and Oceanie: https://en.wikipedia.org/wiki/COVID-19_pandemic_lockdowns
+[
+    {
+        "region": "Canada",
+        "start": "2020-03-25"
+    },
+    {
+        "region": "Quebec",
+        "start": "2020-03-25"
+    },
+    {
+        "region": "Ontario",
+        "start": "2020-03-25"
+    },
+    {
+        "region": "British Columbia",
+        "start": "2020-03-22"
+    },
+    {
+        "region": "Alberta",
+        "start": "2020-03-28"
+    },
+    {
+        "region": "France",
+        "start": "2020-03-17"
+    },
+    {
+        "region": "Germany",
+        "start": "2020-03-23"
+    },
+    {
+        "region": "Switzerland",
+        "start": "2020-03-21"
+    },
+    {
+        "region": "Australia",
+        "start": "2020-03-23"
+    },
+    {
+        "region": "New Zeland",
+        "start": "2020-03-26"
+    },
+    {
+        "region": "Spain",
+        "start": "2020-03-14"
+    }
+]

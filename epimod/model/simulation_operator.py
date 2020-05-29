@@ -31,7 +31,7 @@ class CachedSimulation(metaclass=ABCMeta):
 				self._cached_doutput_dparams = None
 			self._cache_inputs_and_parameters()
 
-		return (self._cached_output, self._cached_doutput_dparams)
+		return (np.copy(self._cached_output), np.copy(self._cached_doutput_dparams))
 
 	def set_gradient_flag(self, flag):
 		self._grad_flag = flag
