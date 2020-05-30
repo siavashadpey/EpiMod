@@ -1,6 +1,7 @@
 import argparse
 import math
 import os
+import datetime as dt
 
 import numpy as np
 import matplotlib as mpl
@@ -17,7 +18,7 @@ from epimod.model.simulation_operator import ModelOp
 from epimod.model.simulation_operator import ModelGradOp
 from epimod.eqn.seir import Seir
 from epimod.solver.ode_solver.rk_solver import RKSolver
-import epimod.data as data_fetcher
+import epimod.data.read_region_data as data_fetcher
 
 class CachedSEIRSimulation(CachedSimulation):
 	def _update_parameters(self):
@@ -50,26 +51,17 @@ class RKSolverSeir(RKSolver):
 
 def run(region, folder, load_trace=False, compute_sim=True):
 
-	print("started ..." + region)
+	print("started ... " + region)
 
 	if not os.path.exists(region):
 		os.makedirs(region)
 
 	# observed data
-	(t_obs, y_obs, n_pop, shutdown_day, u0, _) = data_fetcher.read_region_data(folder, region)
-	y_obs = y_obs.astype(np.float64) #/n_pop
-	u0 = u0.astype(np.float64) #/n_pop
-	print(y_obs)
-	print(u0)
-	print(y_obs.shape)
+	(t_obs, datetimes, y_obs, n_pop, shutdown_day, u0, _) = data_fetcher.read_region_data(folder, region)
+	y_obs = y_obs.astype(np.float64)
+	u0 = u0.astype(np.float64)
+	
 	# set eqn
-	serial_period = 7.2
-	sigma0 = 1./1.3
-	gamma0 = 1./5 #2.28
-	#sigma0 = 1./(serial_period - 1./gamma0) #1.9 #5.2
-	beta0 = 2.45*gamma0
-	kappa0 = 0.02
-
 	eqn = Seir()
 	eqn.tau = shutdown_day
 	
@@ -90,19 +82,10 @@ def run(region, folder, load_trace=False, compute_sim=True):
 	# sample posterior
 	with pm.Model() as model:
 		# set prior distributions
-		#beta  = pm.Uniform('beta',  lower = 0.7*beta0 , upper = 1.3*beta0 )
-		#sigma = pm.Uniform('sigma', lower = 0.8*sigma0, upper = 1.2*sigma0)
-		#gamma = pm.Uniform('gamma', lower = 0.8*gamma0, upper = 1.2*gamma0)
-		#kappa = pm.Uniform('kappa', lower = 0.01, upper = 0.2)
-		#dispersion = pm.Uniform('dispersion', lower = 0.1, upper = 30.)
-		#beta  = pm.Lognormal('beta',  lower = 0.7*beta0 , upper = 1.3*beta0 )
-		#sigma = pm.Lognormal('sigma', mu = math.log(0.1), sigma = 0.5)
-		#gamma = pm.Lognormal('gamma', mu = math.log(0.02), sigma = 0.5)
-		#kappa = pm.Lognormal('kappa', lower = 0.01, upper = 0.2)
-		beta  = pm.Uniform('beta',  lower = 0.4/n_pop, upper = .5/n_pop)
-		sigma = pm.Uniform('sigma', lower = 0.1, upper = 0.12)
-		gamma = pm.Uniform('gamma', lower = 0.1, upper = .12)
-		kappa = pm.Uniform('kappa', lower = 0.02, upper = 0.04)
+		beta  = pm.Lognormal('beta',  mu = math.log(0.3/n_pop), sigma = 0.5)
+		sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
+		gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
+		kappa = pm.Lognormal('kappa', mu = math.log(0.001), sigma = 0.8)
 		dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
 	
 		# set cached_sim object
@@ -113,18 +96,17 @@ def run(region, folder, load_trace=False, compute_sim=True):
 	
 		# set likelihood distribution
 		y_sim = pm.NegativeBinomial('y_sim', mu=model((beta, sigma, gamma, kappa)), alpha=dispersion, observed=y_obs)
-	
+		
 		if not load_trace:
 			# sample posterior distribution and save trace
-			trace = pm.sample(draws=20, tune=10, cores=4, chains=4, nuts_kwargs=dict(target_accept=0.9), init='advi') # using NUTS sampling
-			print(trace.get_values('beta'))
+			trace = pm.sample(draws=20, tune=10, cores=4, chains=4, nuts_kwargs=dict(target_accept=0.9))#, init='advi+adapt_diag') # using NUTS sampling
 			# save trace
-			#pm.backends.text.dump(region + os.path.sep, trace)
+			pm.backends.text.dump(region + os.path.sep, trace)
 		else:
 			# load trace
 			compute_sim = True
 			trace = pm.backends.text.load(region + os.path.sep)		
-			
+		
 		# plot posterior distributions of all parameters
 		data = az.from_pymc3(trace=trace)
 		az.plot_posterior(data,  hdi_prob = 0.95)
@@ -132,8 +114,9 @@ def run(region, folder, load_trace=False, compute_sim=True):
 
 		if compute_sim:
 			rk.set_output_gradient_flag(False)
-			rk.final_time = rk.final_time + 7
-			rk.n_steps = rk.n_steps + 7
+			n_predictions = 7
+			rk.final_time = rk.final_time + n_predictions
+			rk.n_steps = rk.n_steps + n_predictions
 
 			betas = trace.get_values('beta')
 			sigmas = trace.get_values('sigma')
@@ -143,7 +126,6 @@ def run(region, folder, load_trace=False, compute_sim=True):
 			n_samples = betas.shape[0]
 			y_sims = np.zeros((n_samples, eqn.n_outputs(), rk.n_steps + 1))
 			for i in range(n_samples):
-				#print(i)
 				eqn.beta = betas[i]
 				eqn.sigma = sigmas[i]
 				eqn.gamma = gammas[i]
@@ -152,45 +134,40 @@ def run(region, folder, load_trace=False, compute_sim=True):
 				rk.solve()
 				(_, y_sim_i) = rk.get_outputs()
 				y_sims[i,:,:] = y_sim_i
-
-
-			print("here")
 	
 			# compute mean and 95% credible interval
-			mean_ppc = y_sims.mean(axis=0)
-			criL_ppc = np.percentile(y_sims,q=2.5,axis=0)
-			criU_ppc = np.percentile(y_sims,q=97.5,axis=0)
-			print("here2")
+			mean_y = np.mean(y_sims[:,0,:], axis=0)
+			lower_y = np.percentile(y_sims[:,0,:],q=2.5,axis=0)
+			upper_y = np.percentile(y_sims[:,0,:],q=97.5,axis=0)
+
+			# plots
+			dates = [dt.datetime.strptime(date, "%Y-%m-%d").date() for date in datetimes]
+			pred_dates = dates + [dates[-1] + dt.timedelta(days=i) for i in range(1,1 + n_predictions)]
 
 			# linear plot
-			# plot t vs y_obs
 			fig = plt.figure(figsize=(7, 7))
 			ax = fig.add_subplot(111, xlabel='x', ylabel='y')
-			ax.plot(t_obs, y_obs*n_pop, 'x')
-			
-			## plot propagated uncertainty
-			t_obs_ext = np.linspace(rk.initial_time,rk.final_time,num = rk.n_steps + 1)
-			plt.plot(t_obs_ext, mean_ppc[0,:]*n_pop, color='g', lw=2, label='mean')
-			plt.plot(t_obs_ext, criL_ppc[0,:]*n_pop, '--', lw=2, color='g', label='95% credible interval')
-			plt.plot(t_obs_ext, criU_ppc[0,:]*n_pop, '--', lw=2, color='g')
-			plt.legend(loc=0)
-		
+			ax.plot(dates, y_obs, 'x', color='k')
+			import matplotlib.dates as mdates
+			ax.xaxis.set_major_formatter(mdates.DateFormatter('%d %b'))
+			plt.title(region[0].upper() + region[1:].lower() + "'s daily infections")
+			plt.xlabel('Date')
+			plt.ylabel('New daily infections')
+
+			# plot propagated uncertainty
+			plt.plot(pred_dates, mean_y, color='g', lw=2, label='mean')
+			plt.fill_between(pred_dates, lower_y, upper_y, color='darkseagreen', label='95% credible interval')
+			#plt.plot(
+			#plt.plot(pred_dates, upper_y, '--', lw=2, color='g')
+			plt.legend(loc='upper left')
+			fig.autofmt_xdate()
 			plt.savefig(region + os.path.sep + "linear.pdf")
 
 			# log plot
-			fig = plt.figure(figsize=(7, 7))
-			ax = fig.add_subplot(111, xlabel='x', ylabel='y')
-			ax.semilogy(t_obs, y_obs*n_pop, 'x')
-			
-			## plot propagated uncertainty
-			t_obs_ext = np.linspace(rk.initial_time,rk.final_time,num = rk.n_steps + 1)
-			plt.semilogy(t_obs_ext, mean_ppc[0,:]*n_pop, color='g', lw=2, label='mean')
-			plt.semilogy(t_obs_ext, criL_ppc[0,:]*n_pop, '--', lw=2, color='g', label='95% credible interval')
-			plt.semilogy(t_obs_ext, criU_ppc[0,:]*n_pop, '--', lw=2, color='g')
-		
+			plt.yscale('log')
 			plt.savefig(region + os.path.sep + "log.pdf")
 	
-	print("finished ..." + region)
+	print("finished ... " + region)
 
 def main():
 	parser = argparse.ArgumentParser(description="Runs the inference problem for the specified region.")

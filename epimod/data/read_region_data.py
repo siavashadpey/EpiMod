@@ -42,7 +42,7 @@ def read_region_data(folder, region):
 	I0 = df.loc[df.index[0],"aggregate_cases"] - R0
 	IC = np.array([S0, E0, I0, R0])
 	# output necessary data
-	return (df["day_count"].values, df["daily_averaged_cases"].values, n_pop, int(shutdown_day), IC, df["daily_cases"].values)
+	return (df["day_count"].values, df.index.values, df["daily_averaged_cases"].values, n_pop, int(shutdown_day), IC, df["daily_cases"].values)
 	
 def moving_average(x, n=5):
 	# x_ave[i] = 1/n sum_{j=0}^{n-1} x[i-j] and j <= i
@@ -67,8 +67,8 @@ def main():
 
 	folder = args.folder
 	region = args.region.lower()
-	(t, daily_smooth, n_pop, shutdown_day, IC, daily) = read_region_data(folder, region)
-
+	(t, dates, daily_smooth, n_pop, shutdown_day, IC, daily) = read_region_data(folder, region)
+	
 	#print(n_pop)
 	#print(shutdown_day)
 	#for i in range(len(t)):
