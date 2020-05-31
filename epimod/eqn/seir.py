@@ -5,16 +5,17 @@ import numpy as np
 from epimod.eqn.equation import Equation
 
 class Seir(Equation):
-	def __init__(self, beta=0, sigma=0, gamma=0, kappa = 1, tau = math.inf):
+	def __init__(self, beta=0, sigma=0, gamma=0, kappa = 1, tau = math.inf, tint = 5):
 		super().__init__()
 		self._n_components = 4
-		self._n_parameters = 4
+		self._n_parameters = 5
 		self._n_outputs = 1
 		self._beta0 = beta
 		self._sigma = sigma
 		self._gamma = gamma
 		self._kappa = kappa
 		self._tau = tau
+		self._tint = tint
 
 	@property
 	def beta(self):
@@ -61,6 +62,14 @@ class Seir(Equation):
 	def kappa(self, value):
 		self._kappa = value # represents social distancing measures effectiveness
 
+	@property
+	def tint(self):
+		return self._tint
+
+	@tint.setter
+	def tint(self, value):
+		self._tint = value 
+
 	def source(self, t = 0, u = 0, is_grad_needed = False):
 
 		assert u.shape == (self._n_components,), "u is not a vector of size n_components"
@@ -70,7 +79,7 @@ class Seir(Equation):
 		I = u[2]
 		# R = u[3] # Not used
 
-		(b, db0, dkappa) = Seir._compute_beta(self._beta0, self._kappa, self._tau, t)
+		(b, db0, dkappa, dtint) = Seir._compute_beta(self._beta0, self._kappa, self._tau, self._tint, t)
 		s = self._sigma
 		g = self._gamma
 		#print(b)
@@ -88,11 +97,11 @@ class Seir(Equation):
 						  [   0,  s,   -g, 0],
 						  [   0,  0,    g, 0]])
 
-		# rows: df_dbeta0, df_dsigma, df_dgamma, df_dkappa
-		df_dp = np.array([[-db0*S*I,  0,  0, -dkappa*S*I],
-						  [ db0*S*I, -E,  0,  dkappa*S*I],
-						  [       0,  E, -I,           0],
-						  [       0,  0,  I,           0]])
+		# rows: df_dbeta0, df_dsigma, df_dgamma, df_dkappa, df_dtint
+		df_dp = np.array([[-db0*S*I,  0,  0, -dkappa*S*I, -dtint*S*I],
+						  [ db0*S*I, -E,  0,  dkappa*S*I,  dtint*S*I],
+						  [       0,  E, -I,           0,           0],
+						  [       0,  0,  I,           0,           0]])
 
 		return (f, df_du, df_dp)
 
@@ -107,26 +116,33 @@ class Seir(Equation):
 		return (np.sum(u[1:]), np.sum(du_dp[1:,:],axis=0))
 
 	@staticmethod
-	def _compute_beta(theta0, theta1, tau, t):
+	def _compute_beta(theta0, theta1, tau, dt, t):
 		# beta = func(beta0, kappa; t, tau)
-		# returns beta, dbeta_theta0, dbeta_dtheta1
-		dt = t - tau
-		if dt <= 0:
-			return (theta0, 1, 0)
-		else:
-			exp = math.exp(-theta1*dt)
-			return (theta0*exp, exp, -theta0*exp*dt)
-		#dt = 5.
-		#if t <= tau:
+		# returns beta, dbeta_theta0, dbeta_dtheta1, dbeta_dt
+
+		#dt = t - tau
+		#if dt <= 0:
 		#	return (theta0, 1, 0)
+		#else:
+		#	exp = math.exp(-theta1*dt)
+		#	return (theta0*exp, exp, -theta0*exp*dt)
+		
+
+		#if t <= tau:
+		#	return (theta0, 1, 0, 0)
 		#elif t >= tau + dt:
-		#	return (theta1*theta0, theta1, theta0)
+		#	#return (theta1*theta0, theta1, theta0, 0)
 		#elif t > tau and t < tau + dt:
 		#	ratio = (t-tau)/dt
-		#	return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio)
-#
+		#	return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio, (theta1 - 1)*theta0*(-ratio)/dt)
+			# (theta0 + 0.5*(theta1 - 1)*theta0*(1 - math.cos(math.pi*dt)), 1 + (theta1 - 1)*ratio, theta0*ratio) 
 		#else:
 		#	error("error in seir.compute_beta")
 
+		if t <= tau:
+			return (theta0, 1, 0, 0)
+		elif t > tau and t < tau + dt:
+			exp = math.exp(-theta1*dt)
+			return (theta0*exp, exp, -theta0*exp*dt)
 
 

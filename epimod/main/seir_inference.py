@@ -22,12 +22,13 @@ import epimod.data.read_region_data as data_fetcher
 
 class CachedSEIRSimulation(CachedSimulation):
 	def _update_parameters(self):
-		(beta, sigma, gamma, kappa) = np.array(self._eqn_parameters, dtype=np.float64)
+		(beta, sigma, gamma, kappa, tint) = np.array(self._eqn_parameters, dtype=np.float64)
 		eqn = self._ode_solver.equation
 		eqn.beta = beta
 		eqn.sigma = sigma
 		eqn.gamma = gamma
 		eqn.kappa = kappa
+		eqn.tint = tint
 
 class RKSolverSeir(RKSolver):
 	def __init__(self, ti, tf, n_steps = 1):
@@ -86,6 +87,7 @@ def run(region, folder, load_trace=False, compute_sim=True):
 		sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
 		gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
 		kappa = pm.Lognormal('kappa', mu = math.log(0.001), sigma = 0.8)
+		tint = pm.Lognormal('tint', mu = math.log(30), sigma = math.log(10))
 		dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
 	
 		# set cached_sim object
@@ -95,7 +97,7 @@ def run(region, folder, load_trace=False, compute_sim=True):
 		model = ModelOp(cached_sim)
 	
 		# set likelihood distribution
-		y_sim = pm.NegativeBinomial('y_sim', mu=model((beta, sigma, gamma, kappa)), alpha=dispersion, observed=y_obs)
+		y_sim = pm.NegativeBinomial('y_sim', mu=model((beta, sigma, gamma, kappa, tint)), alpha=dispersion, observed=y_obs)
 		
 		if not load_trace:
 			# sample posterior distribution and save trace
@@ -104,11 +106,12 @@ def run(region, folder, load_trace=False, compute_sim=True):
 			pm.backends.text.dump(region + os.path.sep, trace)
 		else:
 			# load trace
-			compute_sim = True
 			trace = pm.backends.text.load(region + os.path.sep)		
 		
 		# plot posterior distributions of all parameters
 		data = az.from_pymc3(trace=trace)
+		pm.plots.traceplot(data, legend=True)
+		plt.savefig(region + os.path.sep + "trace_plot.pdf")
 		az.plot_posterior(data,  hdi_prob = 0.95)
 		plt.savefig(region + os.path.sep + "post_dist.pdf")
 
@@ -122,14 +125,17 @@ def run(region, folder, load_trace=False, compute_sim=True):
 			sigmas = trace.get_values('sigma')
 			gammas = trace.get_values('gamma')
 			kappas = trace.get_values('kappa')
+			tints = trace.get_values('tint')
 
 			n_samples = betas.shape[0]
 			y_sims = np.zeros((n_samples, eqn.n_outputs(), rk.n_steps + 1))
+			# TODO: parallelize
 			for i in range(n_samples):
 				eqn.beta = betas[i]
 				eqn.sigma = sigmas[i]
 				eqn.gamma = gammas[i]
 				eqn.kappa = kappas[i]
+				eqn.tint = tints[i]
 
 				rk.solve()
 				(_, y_sim_i) = rk.get_outputs()
