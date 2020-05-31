@@ -128,21 +128,15 @@ class Seir(Equation):
 		#	return (theta0*exp, exp, -theta0*exp*dt)
 		
 
-		#if t <= tau:
-		#	return (theta0, 1, 0, 0)
-		#elif t >= tau + dt:
-		#	#return (theta1*theta0, theta1, theta0, 0)
-		#elif t > tau and t < tau + dt:
-		#	ratio = (t-tau)/dt
-		#	return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio, (theta1 - 1)*theta0*(-ratio)/dt)
-			# (theta0 + 0.5*(theta1 - 1)*theta0*(1 - math.cos(math.pi*dt)), 1 + (theta1 - 1)*ratio, theta0*ratio) 
-		#else:
-		#	error("error in seir.compute_beta")
-
 		if t <= tau:
 			return (theta0, 1, 0, 0)
+		elif t >= tau + dt:
+			return (theta1*theta0, theta1, theta0, 0)
 		elif t > tau and t < tau + dt:
-			exp = math.exp(-theta1*dt)
-			return (theta0*exp, exp, -theta0*exp*dt)
+			ratio = (t-tau)/dt
+			return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio, (theta1 - 1)*theta0*(-ratio)/dt)
+			# (theta0 + 0.5*(theta1 - 1)*theta0*(1 - math.cos(math.pi*dt)), 1 + (theta1 - 1)*ratio, theta0*ratio) 
+		
+		error("error in seir.compute_beta")
 
 

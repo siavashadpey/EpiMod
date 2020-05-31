@@ -87,7 +87,7 @@ def run(region, folder, load_trace=False, compute_sim=True):
 		sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
 		gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
 		kappa = pm.Lognormal('kappa', mu = math.log(0.001), sigma = 0.8)
-		tint = pm.Lognormal('tint', mu = math.log(30), sigma = math.log(10))
+		tint = pm.Lognormal('tint', mu = math.log(10), sigma = 1.3)
 		dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
 	
 		# set cached_sim object
@@ -101,7 +101,7 @@ def run(region, folder, load_trace=False, compute_sim=True):
 		
 		if not load_trace:
 			# sample posterior distribution and save trace
-			trace = pm.sample(draws=20, tune=10, cores=4, chains=4, nuts_kwargs=dict(target_accept=0.9))#, init='advi+adapt_diag') # using NUTS sampling
+			trace = pm.sample(draws=20, tune=10, cores=4, chains=4, nuts_kwargs=dict(target_accept=0.9), init='advi+adapt_diag') # using NUTS sampling
 			# save trace
 			pm.backends.text.dump(region + os.path.sep, trace)
 		else:
