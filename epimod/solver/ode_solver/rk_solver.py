@@ -8,14 +8,15 @@ class RKSolver(ODESolver):
 	def __init__(self, ti, tf, n_steps = 1, type='rk4'):
 		super().__init__(ti, tf, n_steps)
 		self._rk_types = np.array(["explicit_euler", "rk1", "rk4"])
-		self.set_rk_type(type)
+		self.rk_type = type
 		self._initialize_rk_coefficients()
 
 	@property
-	def set_rk_type(self):
-		return self._set_rk_type
+	def rk_type(self):
+		return self._rk_type
 	
-	def set_rk_type(self, type):
+	@rk_type.setter
+	def rk_type(self, type):
 		assert type.lower() in self._rk_types, type +  " is an unsupported RK type."
 		self._rk_type = type.lower()
 		self._initialize_rk_coefficients()

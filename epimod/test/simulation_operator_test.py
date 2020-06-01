@@ -78,12 +78,13 @@ class TestModelOp(utt.InferShapeTester):
 class CachedSEIRSimulation2(CachedSimulation):
 
 	def _update_parameters(self):
-		(beta, sigma, gamma, kappa) = np.array(self._eqn_parameters, dtype=np.float64) #self._eqn_parameters
+		(beta, sigma, gamma, kappa, tint) = np.array(self._eqn_parameters, dtype=np.float64) #self._eqn_parameters
 		eqn = self._ode_solver.equation
 		eqn.beta = beta
 		eqn.sigma = sigma
 		eqn.gamma = gamma
 		eqn.kappa = kappa
+		eqn.tint = tint
 
 class TestModelOp2(utt.InferShapeTester):
 	rng = np.random.RandomState(43)
@@ -123,16 +124,19 @@ class TestModelOp2(utt.InferShapeTester):
 		s = theano.tensor.dscalar('myvar1')
 		g = theano.tensor.dscalar('myvar2')
 		k = theano.tensor.dscalar('myvar3')
-		f = theano.function([b, s, g, k], self.op_class((b, s, g, k)))
+		t = theano.tensor.dscalar('myvar4')
+		f = theano.function([b, s, g, k, t], self.op_class((b, s, g, k, t)))
 		s_val = 1./5.2 
 		g_val = 1./2.28
 		b_val = 2.13*g_val
 		k_val = 1.1
-		out = f(b_val, s_val, g_val, k_val)
+		t_val = 10
+		out = f(b_val, s_val, g_val, k_val, t_val)
 		self.rk.equation.beta = b_val
 		self.rk.equation.sigma = s_val
 		self.rk.equation.gamma = g_val
 		self.rk.equation.kappa = k_val
+		self.rk.equation.tint = t_val
 		self.rk.solve()
 		(_, out_act, _) = self.rk.get_outputs()
 		assert np.allclose(out_act, out)
@@ -142,8 +146,9 @@ class TestModelOp2(utt.InferShapeTester):
 		g_val = 1./2.28
 		b_val = 2.13*g_val
 		k_val = 1.1
+		t_int = 10
 		rng = np.random.RandomState(42)
-		theano.tensor.verify_grad(self.op_class, [(b_val, s_val, g_val, k_val)], rng=rng)
+		theano.tensor.verify_grad(self.op_class, [(b_val, s_val, g_val, k_val, t_int)], rng=rng)
 
 class TestModelGradOp(utt.InferShapeTester):
 	rng = np.random.RandomState(43)
@@ -183,18 +188,21 @@ class TestModelGradOp(utt.InferShapeTester):
 		s = theano.tensor.dscalar('myvar1')
 		g = theano.tensor.dscalar('myvar2')
 		k = theano.tensor.dscalar('myvar3')
+		t = theano.tensor.dscalar('myvar4')
 		dL_df = theano.tensor.matrix()
-		f = theano.function([b, s, g, k, dL_df], self.op_class((b, s, g, k), dL_df))
+		f = theano.function([b, s, g, k, t, dL_df], self.op_class((b, s, g, k, t), dL_df))
 		s_val = 1./5.2 
 		g_val = 1./2.28
 		b_val = 2.13*g_val
 		k_val = 1.1
+		t_val = 10
 		dL_df_val = np.random.rand(1,21)
-		out = f(b_val, s_val, g_val, k_val, dL_df_val)
+		out = f(b_val, s_val, g_val, k_val, t_val, dL_df_val)
 		self.rk.equation.beta = b_val
 		self.rk.equation.sigma = s_val
 		self.rk.equation.gamma = g_val
 		self.rk.equation.kappa = k_val
+		self.rk.equation.tint = t_val
 		self.rk.solve()
 		(_, _, df_dp) = self.rk.get_outputs()
 		out_act = df_dp[0,:,:] @ dL_df_val.T

@@ -87,7 +87,7 @@ def run(region, folder, load_trace=False, compute_sim=True):
 		sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
 		gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
 		kappa = pm.Lognormal('kappa', mu = math.log(0.001), sigma = 0.8)
-		tint = pm.Lognormal('tint', mu = math.log(10), sigma = 1.3)
+		tint = pm.Lognormal('tint', mu = math.log(30), sigma = math.log(10))
 		dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
 	
 		# set cached_sim object

@@ -16,7 +16,7 @@ class TestSeir(unittest.TestCase):
 		self.assertEqual(eqn.kappa, 5.1)
 		self.assertEqual(eqn.tau, 1)
 		self.assertEqual(eqn.n_components(),4)
-		self.assertEqual(eqn.n_parameters(),4)
+		self.assertEqual(eqn.n_parameters(),5)
 		self.assertEqual(eqn.n_outputs(),1)
 
 	def test_interface(self):
@@ -51,10 +51,26 @@ class TestSeir(unittest.TestCase):
 
 		u = np.array([100., 90., 110., 220.])
 
-		eqn = Seir(beta=2.2,gamma=1,sigma=3.3, tau = 1, kappa = 1.2)
-		s = eqn.source(t=eqn.tau+2, u=u)
+		eqn = Seir(beta=2.2,gamma=1,sigma=3.3, tau = 1, kappa = .3)
+		s = eqn.source(t=eqn.tau+7, u=u)
 
-		beta = 2.2*math.exp(-1.2*(2))
+		beta = 2.2*0.3
+		s_act = np.array([-beta*u[0]*u[2],
+					 	   beta*u[0]*u[2] - 3.3*u[1],
+					 	   3.3*u[1] - 1*u[2],
+					 	   1*u[2]])
+		
+		self.assertAlmostEqual(np.sum(s), 0.0, decimal)
+		np.testing.assert_almost_equal(s, s_act, decimal)
+
+	def test_source3(self):
+
+		u = np.array([100., 90., 110., 220.])
+
+		eqn = Seir(beta=2.2,gamma=1,sigma=3.3, tau = 1, kappa = .3)
+		s = eqn.source(t=eqn.tau+3, u=u)
+
+		beta = 2.2 - 2.2*(1. - 0.3)/5*3
 		s_act = np.array([-beta*u[0]*u[2],
 					 	   beta*u[0]*u[2] - 3.3*u[1],
 					 	   3.3*u[1] - 1*u[2],
