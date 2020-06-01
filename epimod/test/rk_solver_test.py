@@ -29,7 +29,6 @@ class TestRKSolver(unittest.TestCase):
 		self.assertEqual(rk.output_frequency, 20)
 
 	def test_rk4_solver(self):
-		return
 		theta = -1.2
 		eqn = SimpleEquation(theta)
 		u_exact = lambda t: eqn.solution(t)[0]
@@ -67,7 +66,8 @@ class TestRKSolver(unittest.TestCase):
 		rk.set_initial_condition(u0, du0_dp)
 		rk.set_output_gradient_flag(True)
 		n = 4
-		err = np.zeros((n,))
+		err_soln = np.zeros((n,))
+		err_grad = np.zeros((n,))
 		dt = np.zeros((n,))
 		n_steps = 100
 		for i in range(n):
@@ -75,9 +75,13 @@ class TestRKSolver(unittest.TestCase):
 			dt[i] = 1./n_steps
 			rk.n_steps = n_steps
 			rk.solve()
-			err[i] = abs(rk.state()[1] -  eqn.solution(tf)[1])
+			err_soln[i] = abs(rk.state()[0] -  eqn.solution(tf)[0])
+			err_grad[i] = abs(rk.state()[1] -  eqn.solution(tf)[1])
 
-		conv_rate = np.polyfit(np.log(dt), np.log(err), 1)[0]
+		conv_rate = np.polyfit(np.log(dt), np.log(err_soln), 1)[0]
+		self.assertAlmostEqual(conv_rate, 4.0, 1)
+
+		conv_rate = np.polyfit(np.log(dt), np.log(err_grad), 1)[0]
 		self.assertAlmostEqual(conv_rate, 4.0, 1)
 
 	def test_rk4_gradient_computation2(self):
@@ -239,6 +243,61 @@ class TestRKSolver(unittest.TestCase):
 		# reset
 		eqn.kappa = kappa
 
+	def test_explicit_euler_solver(self):
+		theta = -1.2
+		eqn = SimpleEquation(theta)
+		u_exact = lambda t: eqn.solution(t)[0]
+
+		ti = 0
+		tf = 5*math.pi/3
+		u0 = u_exact(ti)
+		rk = RKSolver(ti, tf, type='explicit_euler')
+		rk.equation = eqn
+		rk.set_initial_condition(u0)
+
+		n = 4
+		err = np.zeros((n,))
+		dt = np.zeros((n,))
+		n_steps = 100
+		for i in range(n):
+			n_steps *= (i+1)
+			dt[i] = 1./n_steps
+			rk.n_steps = n_steps
+			rk.solve()
+			err[i] = abs(rk.state() -  u_exact(tf))
+
+		conv_rate = np.polyfit(np.log(dt), np.log(err), 1)[0]
+		self.assertAlmostEqual(conv_rate, 1.0, 1)
+
+	def test_explicit_euler_gradient_computation(self):
+		theta = -1.2
+		eqn = SimpleEquation(theta)
+
+		ti = 0
+		tf = 5*math.pi/3
+		(u0, du0_dp) = eqn.solution(ti)
+		rk = RKSolver(ti, tf, type="explicit_euler")
+		rk.equation = eqn
+		rk.set_initial_condition(u0, du0_dp)
+		rk.set_output_gradient_flag(True)
+		n = 4
+		err_soln = np.zeros((n,))
+		err_grad = np.zeros((n,))
+		dt = np.zeros((n,))
+		n_steps = 100
+		for i in range(n):
+			n_steps *= (i+1)
+			dt[i] = 1./n_steps
+			rk.n_steps = n_steps
+			rk.solve()
+			err_soln[i] = abs(rk.state()[0] -  eqn.solution(tf)[0])
+			err_grad[i] = abs(rk.state()[1] -  eqn.solution(tf)[1])
+
+		conv_rate = np.polyfit(np.log(dt), np.log(err_soln), 1)[0]
+		self.assertAlmostEqual(conv_rate, 1.0, 1)
+
+		conv_rate = np.polyfit(np.log(dt), np.log(err_grad), 1)[0]
+		self.assertAlmostEqual(conv_rate, 1.0, 1)
 
 class SimpleEquation(Equation):
 	def __init__(self, theta):
@@ -248,7 +307,7 @@ class SimpleEquation(Equation):
 	def solution(self, t):
 		u = math.exp(self._theta**3*t)
 		du_dp = u*3*self._theta**2*t
-		return (np.array([u]), np.array([du_dp]))
+		return (np.array([u]), np.array([[du_dp]]))
 
 	def source(self, t, u, is_grad_needed = False):
 		r = self._theta**3*u
