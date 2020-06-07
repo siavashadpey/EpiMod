@@ -40,7 +40,7 @@ def get_csv_data(regions=[], all_regions=False):
 				regions_data[region][data_types[i]] = []
 
 			for entry in data_points:
-				entry_split = entry.split('-')
+				entry_split = [elem.strip() for elem in entry.split('-')]
 				for i in range(len(data_types)):
 					if i < len(entry_split) and entry_split[i].isnumeric():
 						regions_data[region][data_types[i]].append(int(entry_split[i]))
