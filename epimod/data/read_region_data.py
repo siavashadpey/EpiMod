@@ -1,5 +1,5 @@
 #!/usr/bin/env Python3
-
+import math
 import argparse
 import os
 import epimod.data as tools
@@ -16,33 +16,37 @@ def read_region_data(folder, region):
 	# read region's COVID-19 data
 	file_data = folder + os.path.sep + "today" + os.path.sep + str(region).lower() + ".txt"
 	df = pd.read_csv(file_data, na_values=" nan", index_col ="date", header=0, names = ["date", "day_count", "aggregate_cases", "suspected", "cured", "deaths"])
-
-	# drop rows with insufficient data
-	n_min = max(20., 2.E-6*n_pop) # min = 20 or 2/million
-	df = df[(df["aggregate_cases"] >= n_min).idxmax():]
 	
-	# compute daily cases
-	x = np.diff(df["aggregate_cases"].values, prepend=0)
-	df.insert(loc=3, column="daily_cases", value=x)
-	x_ave = moving_average(x,n=7)
-	df.insert(loc=3, column="daily_averaged_cases", value=x_ave)
+	# daily cases
+	df.insert(loc = 3, column="daily_cases", value = np.diff(df["aggregate_cases"].values, prepend=0))
+	df["daily_cases"].clip(lower=0, inplace=True) # no negative daily cases
+
+	# daily average cases
+	x_ave = moving_average(df["daily_cases"].values,n=7)
+	df.insert(loc=6, column="daily_averaged_cases", value=x_ave)
 
 	# read and format shutdown date
 	file_sd = folder + os.path.sep + "shutdown_dates.json"
 	shutdown_date = tools.get_shutdown_date(file_sd, region)
 	if shutdown_date is not None:
-		shutdown_day = df.loc[shutdown_date]["day_count"]
+		shutdown_day = float(df.loc[shutdown_date]["day_count"])
 	else:
-		shutdown_day = None
+		shutdown_day = math.inf
 	
+	# drop rows with insufficient data
+	n_min = max(20., 2.E-6*n_pop) # min = 20 or 2/million
+	start_ind = (df["aggregate_cases"] >= n_min).idxmax()
+	df = df[start_ind:]
+
 	# Initial condition for SEIR
-	S0 = n_pop - df.loc[df.index[0],"aggregate_cases"]
+	S0 = n_pop - df.loc[df.index[0],"aggregate_cases"] # could be anywhere near n_pop (since large number)
 	E0 = 0
-	R0 = df.loc[df.index[0],"cured"] - df.loc[df.index[0],"deaths"]
-	I0 = df.loc[df.index[0],"aggregate_cases"] - R0
+	I0 = df["daily_averaged_cases"][start_ind]
+	R0 = 0
 	IC = np.array([S0, E0, I0, R0])
+
 	# output necessary data
-	return (df["day_count"].values, df.index.values, df["daily_averaged_cases"].values, n_pop, int(shutdown_day), IC, df["daily_cases"].values)
+	return (df["day_count"].values, df.index.values, df["daily_averaged_cases"].values, n_pop, shutdown_day, IC, df["daily_cases"].values)
 	
 def moving_average(x, n=5):
 	# x_ave[i] = 1/n sum_{j=0}^{n-1} x[i-j] and j <= i
@@ -70,13 +74,15 @@ def main():
 	(t, dates, daily_smooth, n_pop, shutdown_day, IC, daily) = read_region_data(folder, region)
 	
 	#print(n_pop)
-	#print(shutdown_day)
+	#print(IC)
 	#for i in range(len(t)):
 		#print(t[i], daily_smooth[i])
 
 
 	plt.plot(t, daily_smooth, color='b', lw=2)
 	plt.vlines(t, 0, daily, colors='b')
+	
+	#plt.yscale('log')
 	plt.show()
 
 
