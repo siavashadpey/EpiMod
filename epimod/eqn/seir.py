@@ -137,6 +137,7 @@ class Seir(Equation):
 			return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio, (theta1 - 1)*theta0*(-ratio)/dt)
 			# (theta0 + 0.5*(theta1 - 1)*theta0*(1 - math.cos(math.pi*dt)), 1 + (theta1 - 1)*ratio, theta0*ratio) 
 		
-		error("error in seir.compute_beta")
-
+		print("error in seir.compute_beta")
+		print(theta0, theta1, tau, dt, t)
+		raise
 
