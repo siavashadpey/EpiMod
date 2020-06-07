@@ -78,7 +78,7 @@ class RKSolver(ODESolver):
 		if not is_grad_needed:
 			res = np.zeros((n_stages, u.shape[0]))
 			for i_stage in range(n_stages):
-				du_stage = np.zeros(u.shape)
+				du_stage = np.zeros_like(u)
 				for j in range(i_stage):
 					du_stage += dt*A[i_stage,j]*res[j]
 
@@ -92,8 +92,8 @@ class RKSolver(ODESolver):
 		res = np.zeros((n_stages, u.shape[0]))
 		dresdp = np.zeros((n_stages, dudp.shape[0], dudp.shape[1]))
 		for i_stage in range(n_stages):
-			du_stage = np.zeros(u.shape)
-			dudp_stage = np.zeros(dudp.shape)
+			du_stage = np.zeros_like(u)
+			dudp_stage = np.zeros_like(dudp)
 			for j in range(i_stage):
 				du_stage += dt*A[i_stage,j]*res[j]
 				dudp_stage += dt*A[i_stage,j]*dresdp[j]
