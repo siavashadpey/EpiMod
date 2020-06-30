@@ -1,4 +1,4 @@
-Rebalance
+EpiMod
 =========
 
 |Build status| |Coverage| |Code Factor| 
