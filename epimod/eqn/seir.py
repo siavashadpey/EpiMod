@@ -93,7 +93,6 @@ class Seir(Equation):
         g = self._gamma
         N = self._population
 
-        #print(b)
         f = np.array([
             -b*S*I/N,
              b*S*I/N - s*E,
@@ -130,10 +129,10 @@ class Seir(Equation):
     def _compute_beta(theta0, theta1, tau, dt, t):
         if t <= tau:
             return (theta0, 1, 0, 0)
-        elif t >= tau + dt:
+        if t >= tau + dt:
             return (theta1*theta0, theta1, theta0, 0)
-        elif t > tau and t < tau + dt:
+        if t > tau and t < tau + dt:
             ratio = (t-tau)/dt
             return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio, (theta1 - 1)*theta0*(-ratio)/dt)
-        raise
-
+        
+        raise Exception(theta0, theta1, tau, dt, t)

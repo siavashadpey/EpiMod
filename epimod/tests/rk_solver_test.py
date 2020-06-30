@@ -251,7 +251,7 @@ class TestRKSolver(unittest.TestCase):
         ti = 0
         tf = 5*math.pi/3
         u0 = u_exact(ti)
-        rk = RKSolver(ti, tf, type='explicit_euler')
+        rk = RKSolver(ti, tf, typ='explicit_euler')
         rk.equation = eqn
         rk.set_initial_condition(u0)
 
@@ -276,7 +276,7 @@ class TestRKSolver(unittest.TestCase):
         ti = 0
         tf = 5*math.pi/3
         (u0, du0_dp) = eqn.solution(ti)
-        rk = RKSolver(ti, tf, type="explicit_euler")
+        rk = RKSolver(ti, tf, typ="explicit_euler")
         rk.equation = eqn
         rk.set_initial_condition(u0, du0_dp)
         rk.set_output_gradient_flag(True)
