@@ -37,12 +37,12 @@ def get_csv_data(regions=[], all_regions=False):
             data_points = df_filt[region].to_numpy()
 
             # store data
-            for i,_ in enumerate(data_types):
+            for i, _ in enumerate(data_types):
                 regions_data[region][data_types[i]] = []
 
             for entry in data_points:
                 entry_split = [elem.strip() for elem in entry.split('-')]
-                for i in range(len(data_types)):
+                for i, _ in enumerate(data_types):
                     if i < len(entry_split) and entry_split[i].isnumeric():
                         regions_data[region][data_types[i]].append(int(entry_split[i]))
                     else:
@@ -77,7 +77,7 @@ def save_data(folder_dir, regions):
         f.write("\n")
         
         # write data
-        for day in range(len(region_data['dates'])):
+        for day, _ in enumerate(region_data['dates']):
             f.write(region_data['dates'][day] + ", ")
             f.write(str(day))
             for typ in data_types:

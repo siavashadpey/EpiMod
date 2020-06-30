@@ -20,25 +20,26 @@ class RKSolverSeir(RKSolver):
                 y = np.diff(outs[1], prepend=0)
                 y[y<1.E-14] = 1.E-14
                 return (self._time_array, y, np.diff(outs[2], prepend=0))
-            else:
-                y = np.diff(outs[1], prepend=0)
-                y[y<1.E-14] = 1.E-14
-                return (self._time_array, y)
-        else:
-            error("output is not stored")
+            
+            y = np.diff(outs[1], prepend=0)
+            y[y<1.E-14] = 1.E-14
+            return (self._time_array, y)
+        
+        raise Exception("output is not stored")
 
 def run(region, folder):
 
     (t_obs, dates, y_obs, n_pop, shutdown_day, u0, _) = data_fetcher.read_region_data(folder, region)
     y_obs = y_obs.astype(np.float64)
     u0 = u0.astype(np.float64)
-    
+
     # set eqn
     eqn = Seir()
     eqn.tau = shutdown_day
-    eqn.beta = 3.9E-8
-    eqn.sigma = 0.55
-    eqn.gamma = 0.19
+    eqn.population = n_pop
+    eqn.beta = .7
+    eqn.sigma = 0.8
+    eqn.gamma = 0.2
     eqn.kappa = 0.25
     eqn.tint = 25
     
@@ -67,7 +68,7 @@ def run(region, folder):
     import matplotlib.dates as mdates
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%d %b'))
 
-    #plt.yscale('log')
+    plt.yscale('log')
     plt.show()
 
 def main():
