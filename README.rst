@@ -3,7 +3,7 @@ EpiMod
 
 |Build status| |Coverage| |Code Factor| 
 
-EpiMod is a data-driven epidemiological modeling tool written in Python and used for COVID-19. Using Bayesian inference and the epidemiological SEIR ordinary differential equations, it models the reported daily number of new infections in a region and makes projections for upcoming days. A high-level explanation of the tool is given `here <https://siavashadpey.github.io/projects/covid19_projections/>`_. 
+EpiMod is a data-driven epidemiological modeling tool used for COVID-19. Using Bayesian inference and the epidemiological SEIR ordinary differential equations, it models the reported daily number of new infections in a region and makes projections for upcoming days. A high-level explanation of the tool is given `here <https://siavashadpey.github.io/projects/covid19_projections/>`_. 
 
 .. raw:: html
 
