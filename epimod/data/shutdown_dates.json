@@ -1,6 +1,7 @@
 # currently, manually entering data
 # Canada: https://www.mccarthy.ca/en/insights/articles/covid-19-emergency-measures-tracker
 # Europe and Oceanie: https://en.wikipedia.org/wiki/COVID-19_pandemic_lockdowns
+# Netherlands: https://www.dutchnews.nl/news/2020/05/coronavirus-a-timeline-of-the-pandemic-in-the-netherlands/
 [
     {
         "region": "Canada",
@@ -39,11 +40,34 @@
         "start": "2020-03-23"
     },
     {
-        "region": "New Zeland",
+        "region": "New Zealand",
         "start": "2020-03-26"
     },
     {
         "region": "Spain",
         "start": "2020-03-14"
+    },
+    {
+        "region": "Italy",
+        "start": "2020-03-09"
+    },
+    {
+        "region": "UK",
+        "start": "2020-03-23"
+    },
+    {
+        "region": "US",
+        "start": "2020-03-23"
+    },
+    {
+        "region": "Netherlands",
+        "start": "2020-03-23"
+    },
+    {
+        "region": "Portugal",
+        "start": "2020-03-19"
     }
 ]
+
+
+
