@@ -24,9 +24,6 @@ import epimod.data.read_region_data as data_fetcher
 class CachedSEIRSimulation(CachedSimulation):
     def _update_parameters(self):
         (beta, sigma, gamma, kappa, tint) = self._eqn_parameters
-        #print(beta, sigma, gamma, kappa, tint)
-        import sys
-        sys.stdout.flush()
         eqn = self._ode_solver.equation
         eqn.beta = beta
         eqn.sigma = sigma
@@ -45,12 +42,12 @@ class RKSolverSeir(RKSolver):
                 y = np.diff(outs[1], prepend=0)
                 y[y<1.E-14] = 1.E-14
                 return (self._time_array, y, np.diff(outs[2], prepend=0))
-            else:
-                y = np.diff(outs[1], prepend=0)
-                y[y<1.E-14] = 1.E-14
-                return (self._time_array, y)
-        else:
-            error("output is not stored")
+
+            y = np.diff(outs[1], prepend=0)
+            y[y<1.E-14] = 1.E-14
+            return (self._time_array, y)
+        
+        error("output is not stored")
 
 def dist_from_samples(param_name, samples):
     smin, smax = np.min(samples), np.max(samples)
