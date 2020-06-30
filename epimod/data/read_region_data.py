@@ -72,12 +72,6 @@ def main():
     folder = args.folder
     region = args.region.lower()
     (t, dates, daily_smooth, n_pop, shutdown_day, IC, daily) = read_region_data(folder, region)
-    
-    #print(n_pop)
-    #print(IC)
-    #for i in range(len(t)):
-        #print(t[i], daily_smooth[i])
-
 
     plt.plot(t, daily_smooth, color='b', lw=2)
     plt.vlines(t, 0, daily, colors='b')
