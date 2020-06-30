@@ -1,0 +1,6 @@
+[run]:
+source = 
+	epimod/
+omit = 
+	epimod/tests/*.py
+	epimod/main/*.py

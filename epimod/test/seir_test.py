@@ -9,7 +9,7 @@ decimal = 6
 class TestSeir(unittest.TestCase):
 
     def test_constructor(self):
-        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, kappa = 5.1, tau = 1)
+        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, kappa = 5.1, tau = 1, population = 1)
         self.assertEqual(eqn.sigma, 3.3)
         self.assertEqual(eqn.gamma, 1)
         self.assertEqual(eqn.beta, 2.2)
@@ -36,7 +36,7 @@ class TestSeir(unittest.TestCase):
 
         u = np.array([100., 90., 110., 220.])
 
-        eqn = Seir(beta=2.2,gamma=1,sigma=3.3)
+        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, population = 1)
         s = eqn.source(u=u)
 
         s_act = np.array([-2.2*u[0]*u[2],
@@ -51,7 +51,7 @@ class TestSeir(unittest.TestCase):
 
         u = np.array([100., 90., 110., 220.])
 
-        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, tau = 1, kappa = .3)
+        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, tau = 1, kappa = .3, population = 1)
         s = eqn.source(t=eqn.tau+7, u=u)
 
         beta = 2.2*0.3
@@ -67,7 +67,7 @@ class TestSeir(unittest.TestCase):
 
         u = np.array([100., 90., 110., 220.])
 
-        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, tau = 1, kappa = .3)
+        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, tau = 1, kappa = .3, population = 1)
         s = eqn.source(t=eqn.tau+3, u=u)
 
         beta = 2.2 - 2.2*(1. - 0.3)/5*3
@@ -85,7 +85,7 @@ class TestSeir(unittest.TestCase):
         beta = 2.2
         sigma = 3.3
         gamma = 4.13
-        eqn = Seir(beta, sigma, gamma)
+        eqn = Seir(beta, sigma, gamma, population = 5)
         (s, ds_du, ds_dp) = eqn.source(u=u, is_grad_needed = True)
 
         epsi = 1E-1
@@ -107,45 +107,45 @@ class TestSeir(unittest.TestCase):
         sigma = 3.3
         gamma = 4.13
 
-        eqn = Seir(beta0, sigma, gamma)
+        eqn = Seir(beta0, sigma, gamma, population = 5)
         (s, ds_du, ds_dp) = eqn.source(u=u, is_grad_needed = True)
 
         epsi = 1E-3
 
         # beta0 gradient
-        eqn = Seir(beta0 + epsi, sigma, gamma)
+        eqn = Seir(beta0 + epsi, sigma, gamma, population = 5)
         s_p1 = eqn.source(u=u)
-        eqn = Seir(beta0 - epsi, sigma, gamma)
+        eqn = Seir(beta0 - epsi, sigma, gamma, population = 5)
         s_m1 = eqn.source(u=u)
         np.testing.assert_almost_equal(ds_dp[:,0], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # sigma gradient
-        eqn = Seir(beta0, sigma + epsi, gamma)
+        eqn = Seir(beta0, sigma + epsi, gamma, population = 5)
         s_p1 = eqn.source(u=u)
-        eqn = Seir(beta0, sigma - epsi, gamma)
+        eqn = Seir(beta0, sigma - epsi, gamma, population = 5)
         s_m1 = eqn.source(u=u)
         np.testing.assert_almost_equal(ds_dp[:,1], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # gamma gradient
-        eqn = Seir(beta0, sigma, gamma + epsi)
+        eqn = Seir(beta0, sigma, gamma + epsi, population = 5)
         s_p1 = eqn.source(u=u)
-        eqn = Seir(beta0, sigma, gamma - epsi)
+        eqn = Seir(beta0, sigma, gamma - epsi, population = 5)
         s_m1 = eqn.source(u=u)
         np.testing.assert_almost_equal(ds_dp[:,2], (s_p1 - s_m1)/(2*epsi), decimal)
 
         # kappa gradient
         kappa = 1.2
-        eqn = Seir(beta0, sigma, gamma, kappa + epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa + epsi, population = 5)
         s_p1 = eqn.source(u=u)
-        eqn = Seir(beta0, sigma, gamma, kappa - epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa - epsi, population = 5)
         s_m1 = eqn.source(u=u)
         np.testing.assert_almost_equal(ds_dp[:,3], (s_p1 - s_m1)/(2*epsi), decimal)
 
         # tint gradient
         tint = eqn.tint
-        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint+epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint+epsi, population = 5)
         s_p1 = eqn.source(u=u)
-        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint-epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint-epsi, population = 5)
         s_m1 = eqn.source(u=u)
         np.testing.assert_almost_equal(ds_dp[:,4], (s_p1 - s_m1)/(2*epsi), decimal)
 
@@ -159,45 +159,45 @@ class TestSeir(unittest.TestCase):
         tau = 1
         t = tau + 7
 
-        eqn = Seir(beta0, sigma, gamma, kappa, tau)
+        eqn = Seir(beta0, sigma, gamma, kappa, tau, population = 5)
         
         (s, ds_du, ds_dp) = eqn.source(t=t, u=u, is_grad_needed = True)
 
         epsi = 1E-5
 
         # beta0 gradient
-        eqn = Seir(beta0 + epsi, sigma, gamma, kappa, tau)
+        eqn = Seir(beta0 + epsi, sigma, gamma, kappa, tau, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0 - epsi, sigma, gamma, kappa, tau)
+        eqn = Seir(beta0 - epsi, sigma, gamma, kappa, tau, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,0], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # sigma gradient
-        eqn = Seir(beta0, sigma + epsi, gamma, kappa, tau)
+        eqn = Seir(beta0, sigma + epsi, gamma, kappa, tau, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0, sigma - epsi, gamma, kappa, tau)
+        eqn = Seir(beta0, sigma - epsi, gamma, kappa, tau, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,1], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # gamma gradient
-        eqn = Seir(beta0, sigma, gamma + epsi, kappa, tau)
+        eqn = Seir(beta0, sigma, gamma + epsi, kappa, tau, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0, sigma, gamma - epsi, kappa, tau)
+        eqn = Seir(beta0, sigma, gamma - epsi, kappa, tau, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,2], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # kappa gradient
-        eqn = Seir(beta0, sigma, gamma, kappa + epsi, tau)
+        eqn = Seir(beta0, sigma, gamma, kappa + epsi, tau, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0, sigma, gamma, kappa - epsi, tau)
+        eqn = Seir(beta0, sigma, gamma, kappa - epsi, tau, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,3], (s_p1 - s_m1)/(2*epsi), decimal)
 
         # tint gradient
         tint = eqn.tint
-        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint+epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint+epsi, population = 5)
         s_p1 = eqn.source(u=u)
-        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint-epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa, tint=tint-epsi, population = 5)
         s_m1 = eqn.source(u=u)
         np.testing.assert_almost_equal(ds_dp[:,4], (s_p1 - s_m1)/(2*epsi), decimal)
 
@@ -211,51 +211,51 @@ class TestSeir(unittest.TestCase):
         t = tau + 3
         tint = 5
 
-        eqn = Seir(beta0, sigma, gamma, kappa, tau, tint)
+        eqn = Seir(beta0, sigma, gamma, kappa, tau, tint, population = 5)
         
         (s, ds_du, ds_dp) = eqn.source(t=t, u=u, is_grad_needed = True)
 
         epsi = 1E-5
 
         # beta0 gradient
-        eqn = Seir(beta0 + epsi, sigma, gamma, kappa, tau, tint)
+        eqn = Seir(beta0 + epsi, sigma, gamma, kappa, tau, tint, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0 - epsi, sigma, gamma, kappa, tau, tint)
+        eqn = Seir(beta0 - epsi, sigma, gamma, kappa, tau, tint, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,0], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # sigma gradient
-        eqn = Seir(beta0, sigma + epsi, gamma, kappa, tau, tint)
+        eqn = Seir(beta0, sigma + epsi, gamma, kappa, tau, tint, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0, sigma - epsi, gamma, kappa, tau, tint)
+        eqn = Seir(beta0, sigma - epsi, gamma, kappa, tau, tint, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,1], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # gamma gradient
-        eqn = Seir(beta0, sigma, gamma + epsi, kappa, tau, tint)
+        eqn = Seir(beta0, sigma, gamma + epsi, kappa, tau, tint, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0, sigma, gamma - epsi, kappa, tau, tint)
+        eqn = Seir(beta0, sigma, gamma - epsi, kappa, tau, tint, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,2], (s_p1 - s_m1)/(2*epsi), decimal)
         
         # kappa gradient
-        eqn = Seir(beta0, sigma, gamma, kappa + epsi, tau, tint)
+        eqn = Seir(beta0, sigma, gamma, kappa + epsi, tau, tint, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0, sigma, gamma, kappa - epsi, tau, tint)
+        eqn = Seir(beta0, sigma, gamma, kappa - epsi, tau, tint, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,3], (s_p1 - s_m1)/(2*epsi), decimal)
 
         # tint gradient
-        eqn = Seir(beta0, sigma, gamma, kappa, tau, tint + epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa, tau, tint + epsi, population = 5)
         s_p1 = eqn.source(t=t, u=u)
-        eqn = Seir(beta0, sigma, gamma, kappa, tau, tint - epsi)
+        eqn = Seir(beta0, sigma, gamma, kappa, tau, tint - epsi, population = 5)
         s_m1 = eqn.source(t=t, u=u)
         np.testing.assert_almost_equal(ds_dp[:,4], (s_p1 - s_m1)/(2*epsi), decimal)
 
     def test_output(self):
         u = np.array([100., 90., 110., 220.])
 
-        eqn = Seir(beta=2.2,gamma=1,sigma=3.3)
+        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, population = 5)
         s = eqn.source(u=u)
         f = eqn.output(u=u)
 
@@ -264,7 +264,7 @@ class TestSeir(unittest.TestCase):
     def test_output_param_grad(self):
         u = np.array([100., 90., 110., 220.])
 
-        eqn = Seir(beta=2.2,gamma=1,sigma=3.3)
+        eqn = Seir(beta=2.2,gamma=1,sigma=3.3, population = 5)
         s = eqn.source(u=u)
         du_dp = np.random.random((eqn.n_components(), eqn.n_parameters()))
         (f, df_dp) = eqn.output(u=u, du_dp = du_dp)

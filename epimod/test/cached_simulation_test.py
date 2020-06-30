@@ -18,7 +18,7 @@ class CachedSEIRSimulation(CachedSimulation):
 class TestCachedSimulation(unittest.TestCase):
     def test_correct_caching(self):
         # setup equation
-        eqn = Seir()
+        eqn = Seir(population = 1)
 
         # setup ode solver
         ti = 0.
@@ -58,7 +58,7 @@ class TestCachedSimulation(unittest.TestCase):
 
     def test_correct_caching2(self):
         # setup equation
-        eqn = Seir()
+        eqn = Seir(population = 1)
 
         # setup ode solver
         ti = 0.
@@ -93,7 +93,7 @@ class TestCachedSimulation(unittest.TestCase):
 
     def test_correct_caching3(self):
         # setup equation
-        eqn = Seir()
+        eqn = Seir(population = 1)
 
         # setup ode solver
         ti = 0.

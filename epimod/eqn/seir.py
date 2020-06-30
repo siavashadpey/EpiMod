@@ -5,7 +5,7 @@ import numpy as np
 from epimod.eqn.equation import Equation
 
 class Seir(Equation):
-    def __init__(self, beta=0, sigma=0, gamma=0, kappa = 1, tau = math.inf, tint = 5):
+    def __init__(self, beta=0, sigma=0, gamma=0, kappa = 1, tau = math.inf, tint = 5, population = 1E6):
         super().__init__()
         self._n_components = 4
         self._n_parameters = 5
@@ -16,6 +16,15 @@ class Seir(Equation):
         self._kappa = kappa
         self._tau = tau
         self._tint = tint
+        self._population = population
+
+    @property
+    def population(self):
+        return self._population
+
+    @population.setter
+    def population(self, value):
+        self._population = value
 
     @property
     def beta(self):
@@ -82,24 +91,26 @@ class Seir(Equation):
         (b, db0, dkappa, dtint) = Seir._compute_beta(self._beta0, self._kappa, self._tau, self._tint, t)
         s = self._sigma
         g = self._gamma
+        N = self._population
+
         #print(b)
         f = np.array([
-            -b*S*I,
-             b*S*I - s*E,
+            -b*S*I/N,
+             b*S*I/N - s*E,
              s*E - g*I, 
              g*I])
 
         if not is_grad_needed:
             return f
 
-        df_du = np.array([[-b*I,  0, -b*S, 0],
-                          [ b*I, -s,  b*S, 0],
+        df_du = np.array([[-b*I/N,  0, -b*S/N, 0],
+                          [ b*I/N, -s,  b*S/N, 0],
                           [   0,  s,   -g, 0],
                           [   0,  0,    g, 0]])
 
         # rows: df_dbeta0, df_dsigma, df_dgamma, df_dkappa, df_dtint
-        df_dp = np.array([[-db0*S*I,  0,  0, -dkappa*S*I, -dtint*S*I],
-                          [ db0*S*I, -E,  0,  dkappa*S*I,  dtint*S*I],
+        df_dp = np.array([[-db0*S*I/N,  0,  0, -dkappa*S*I/N, -dtint*S*I/N],
+                          [ db0*S*I/N, -E,  0,  dkappa*S*I/N,  dtint*S*I/N],
                           [       0,  E, -I,           0,           0],
                           [       0,  0,  I,           0,           0]])
 
