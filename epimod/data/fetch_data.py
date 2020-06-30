@@ -5,6 +5,7 @@ import requests
 import io
 import pandas as pd
 import os
+import subprocess
 from datetime import datetime
 
 url = 'https://hgis.uw.edu/virus/assets/virus.csv'
@@ -15,7 +16,7 @@ def get_csv_data(regions=[], all_regions=False):
     try:
         contents = requests.get(url).content
     except:
-        print("Error: couldn't retrieve data from " + url)
+        raise Exception("Error: couldn't retrieve data from " + url)
 
     df = pd.read_csv(io.StringIO(contents.decode('utf-8')))
     df.dropna(axis='columns', thresh=min_data_points, inplace=True) # remove regions with insufficent data
@@ -36,7 +37,7 @@ def get_csv_data(regions=[], all_regions=False):
             data_points = df_filt[region].to_numpy()
 
             # store data
-            for i in range(len(data_types)):
+            for i,_ in enumerate(data_types):
                 regions_data[region][data_types[i]] = []
 
             for entry in data_points:
@@ -49,7 +50,7 @@ def get_csv_data(regions=[], all_regions=False):
 
             print("done")
         except:
-            print("Error: couldn't obtain data of region " + region + " -"*50)
+            raise Exception("Error: couldn't obtain data of region " + region + " -"*50)
 
     print("")
     return regions_data
@@ -105,9 +106,9 @@ def main():
     # make a copy of today's folder
     today_dir = args.folder + os.path.sep + "today"
     cmd = "rm -fr " + today_dir
-    os.system(cmd)
+    subprocess.call(cmd, shell=True)
     cmd = "cp -r " + folder_dir + " " + today_dir
-    os.system(cmd)
+    subprocess.call(cmd, shell=True)
 
 if __name__ == '__main__':
     main()

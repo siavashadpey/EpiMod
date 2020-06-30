@@ -34,8 +34,8 @@ EpiMod is a data-driven epidemiological modeling tool written in Python. More sp
 .. |Build Status| image:: https://travis-ci.org/siavashadpey/epimod.svg?branch=master
     :target: https://travis-ci.org/siavashadpey/epimod.svg?branch=master
     
-.. |Coverage| image:: https://coveralls.io/repos/github/siavashadpey/epimod/badge.svg?branch=master
-    :target: https://coveralls.io/repos/github/siavashadpey/epimod/badge.svg?branch=master
+.. |Coverage| image:: https://coveralls.io/repos/github/siavashadpey/EpiMod/badge.svg?branch=master
+    :target: https://coveralls.io/github/siavashadpey/EpiMod?branch=master
 
 .. |Code Factor| image:: https://www.codefactor.io/repository/github/siavashadpey/epimod/badge
    :target: https://www.codefactor.io/repository/github/siavashadpey/epimod

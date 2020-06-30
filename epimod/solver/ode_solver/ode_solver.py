@@ -61,8 +61,8 @@ class ODESolver(metaclass=ABCMeta):
     def state(self):
         if not self._is_output_grad_needed:
             return self._state
-        else:
-            return (self._state, self._dstate_dp)
+        
+        return (self._state, self._dstate_dp)
 
 
     def set_initial_condition(self, state, dstate_dp = None):
@@ -91,13 +91,11 @@ class ODESolver(metaclass=ABCMeta):
         if self._is_output_stored:
             if self._is_output_grad_needed:
                 return (self._time_array, self._outputs_array, self._doutputs_dp_array)
-            else:
-                return (self._time_array, self._outputs_array)
-        else:
-            if self._is_output_grad_needed:
-                return (self._outputs, self._doutputs_dp)
-            else:
-                return self._outputs
+            return (self._time_array, self._outputs_array)
+        
+        if self._is_output_grad_needed:
+            return (self._outputs, self._doutputs_dp)
+        return self._outputs
 
     @abstractmethod
     def solve(self):
