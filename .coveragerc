@@ -4,3 +4,4 @@ source =
 omit = 
 	epimod/tests/*.py
 	epimod/main/*.py
+	epimod/data/*.py
