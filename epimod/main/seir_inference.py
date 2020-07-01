@@ -51,42 +51,7 @@ class RKSolverSeir(RKSolver):
         
         error("output is not stored")
 
-def dist_from_samples(param_name, samples):
-    smin, smax = np.min(samples), np.max(samples)
-    width = smax - smin
-    x = np.linspace(smin, smax, 100)
-    y = stats.gaussian_kde(samples)(x)
-
-    # what was never sampled should have a small probability but not 0,
-    # so we'll extend the domain and use linear approximation of density on it
-    x = np.concatenate([[x[0] - 3 * width], x, [x[-1] + 3 * width]])
-    y = np.concatenate([[0], y, [0]])
-    return pm.distributions.Interpolated(param_name, x, y)
-
-def dist_from_samples(param_name, samples):
-    smin, smax = np.min(samples), np.max(samples)
-    width = smax - smin
-    x = np.linspace(smin, smax, 100)
-    y = stats.gaussian_kde(samples)(x)
-
-    # what was never sampled should have a small probability but not 0,
-    # so we'll extend the domain and use linear approximation of density on it
-    x = np.concatenate([[x[0] - 3 * width], x, [x[-1] + 3 * width]])
-    y = np.concatenate([[0], y, [0]])
-    return pm.distributions.Interpolated(param_name, x, y)
-
-def single_simulation(tup, rk):
-    (beta, sigma, gamma, kappa, tint) = tup
-    rk.equation.beta = beta
-    rk.equation.sigma = sigma
-    rk.equation.gamma = gamma
-    rk.equation.kappa = kappa
-    rk.equation.tint = tint
-    rk.solve()
-    (_, y_sim) = rk.get_outputs()   
-    return y_sim
-
-def run(region, folder, smart_prior=False, load_trace=False, compute_sim=True, plot_posterior_dist = True):
+def run(region, folder, load_trace=False, compute_sim=True, plot_posterior_dist = True):
 
     print("started ... " + region)
 
@@ -132,22 +97,12 @@ def run(region, folder, smart_prior=False, load_trace=False, compute_sim=True, p
         #kappa = pm.Normal('kappa', mu = 0.5, sigma = 0.1)
         #tint = pm.Lognormal('tint', mu = math.log(30), sigma = 1)
 
-        if not smart_prior:
-            beta  = pm.Lognormal('beta',  mu = math.log(0.1), sigma = 0.5) #math.log(0.3/n_pop), sigma = 0.5)
-            sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
-            gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
-            kappa = pm.Lognormal('kappa', mu = math.log(0.2), sigma = 0.3) # math.log(0.001), sigma = 0.8)
-            tint = pm.Lognormal('tint', mu = math.log(30), sigma = math.log(10))
-            dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
-        else:
-            # use old posterior dist as new prior dist
-            trace0 = pm.backends.text.load(region + os.path.sep)
-            beta = dist_from_samples('beta', trace['beta'])
-            sigma = dist_from_samples('sigma', trace['sigma'])
-            gamma = dist_from_samples('gamma', trace['gamma'])
-            kappa = dist_from_samples('kappa', trace['kappa'])
-            tint = dist_from_samples('tint', trace['tint'])
-            dispersion = dist_from_samples('dispersion', trace['dispersion'])
+        beta  = pm.Lognormal('beta',  mu = math.log(0.1), sigma = 0.5) #math.log(0.3/n_pop), sigma = 0.5)
+        sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
+        gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
+        kappa = pm.Lognormal('kappa', mu = math.log(0.2), sigma = 0.3) # math.log(0.001), sigma = 0.8)
+        tint = pm.Lognormal('tint', mu = math.log(30), sigma = math.log(10))
+        dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
 
         # set cached_sim object
         cached_sim = CachedSEIRSimulation(rk)
@@ -228,7 +183,6 @@ def main():
     parser.add_argument('--load_trace', '-l', action='store_true', default=False, help='flag indicating to load trace')
     parser.add_argument('--no_propagate', '-np', action='store_true', default=False, help='flag indicating not to perform UQ or not')
     parser.add_argument('--no_post_plot', '-npp', action='store_true', default=False, help='flag indicating not to plot posterior distributions')
-    parser.add_argument('--smart_prior', '-sp', action='store_true', default=False, help='flag indicating to use olde posterior distributions as new prior distributions')
     args = parser.parse_args()
 
     folder = args.folder
@@ -236,11 +190,10 @@ def main():
     load_trace = args.load_trace
     plot_post = not args.no_post_plot
     propagate = not args.no_propagate
-    smart_prior = args.smart_prior
 
     assert not (smart_prior and load_trace), "choose either to load trace or to use it as the prior distributions"
 
-    run(region, folder, smart_prior, load_trace, propagate, plot_post)
+    run(region, folder, load_trace, propagate, plot_post)
 
 if __name__ == '__main__':
     main()
