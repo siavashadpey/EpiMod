@@ -14,6 +14,8 @@ import pymc3 as pm
 import arviz as az
 import pandas as pd
 
+import theano
+
 from epimod.model.simulation_operator import CachedSimulation
 from epimod.model.simulation_operator import ModelOp
 from epimod.model.simulation_operator import ModelGradOp
@@ -25,8 +27,6 @@ class CachedSEIRSimulation(CachedSimulation):
     def _update_parameters(self):
         (beta, sigma, gamma, kappa, tint) = self._eqn_parameters
         #print(beta, sigma, gamma, kappa, tint)
-        import sys
-        sys.stdout.flush()
         eqn = self._ode_solver.equation
         eqn.beta = beta
         eqn.sigma = sigma
@@ -52,6 +52,18 @@ class RKSolverSeir(RKSolver):
         else:
             error("output is not stored")
 
+def dist_from_samples(param_name, samples):
+    smin, smax = np.min(samples), np.max(samples)
+    width = smax - smin
+    x = np.linspace(smin, smax, 100)
+    y = stats.gaussian_kde(samples)(x)
+
+    # what was never sampled should have a small probability but not 0,
+    # so we'll extend the domain and use linear approximation of density on it
+    x = np.concatenate([[x[0] - 3 * width], x, [x[-1] + 3 * width]])
+    y = np.concatenate([[0], y, [0]])
+    return pm.distributions.Interpolated(param_name, x, y)
+
 def single_simulation(tup, rk):
     (beta, sigma, gamma, kappa, tint) = tup
     rk.equation.beta = beta
@@ -63,7 +75,7 @@ def single_simulation(tup, rk):
     (_, y_sim) = rk.get_outputs()   
     return y_sim
 
-def run(region, folder, load_trace=False, compute_sim=True, plot_posterior_dist = True):
+def run(region, folder, smart_prior=False, load_trace=False, compute_sim=True, plot_posterior_dist = True):
 
     print("started ... " + region)
 
@@ -77,6 +89,7 @@ def run(region, folder, load_trace=False, compute_sim=True, plot_posterior_dist 
 
     # set eqn
     eqn = Seir()
+    eqn.population = n_pop
     eqn.tau = shutdown_day
     
     # set ode solver
@@ -108,13 +121,24 @@ def run(region, folder, load_trace=False, compute_sim=True, plot_posterior_dist 
         #kappa = pm.Normal('kappa', mu = 0.5, sigma = 0.1)
         #tint = pm.Lognormal('tint', mu = math.log(30), sigma = 1)
 
-        beta  = pm.Lognormal('beta',  mu = math.log(0.3/n_pop), sigma = 0.5)
-        sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
-        gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
-        kappa = pm.Lognormal('kappa', mu = math.log(0.001), sigma = 0.8)
-        tint = pm.Lognormal('tint', mu = math.log(30), sigma = math.log(10))
-        dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
-    
+        if not smart_prior:
+            beta  = pm.Lognormal('beta',  mu = math.log(0.1), sigma = 0.5) #math.log(0.3/n_pop), sigma = 0.5)
+            sigma = pm.Lognormal('sigma', mu = math.log(0.05), sigma = 0.6)
+            gamma = pm.Lognormal('gamma', mu = math.log(0.05), sigma = 0.6)
+            kappa = pm.Lognormal('kappa', mu = math.log(0.2), sigma = 0.3) # math.log(0.001), sigma = 0.8)
+            tint = pm.Lognormal('tint', mu = math.log(30), sigma = math.log(10))
+            dispersion = pm.Normal('dispersion', mu = 30., sigma = 10.)
+        else:
+            # use old posterior dist as new prior dist
+            trace0 = pm.backends.text.load(region + os.path.sep)
+            print(trace0.varnamesList)
+            beta = dist_from_samples('beta', trace['beta'])
+            sigma = dist_from_samples('sigma', trace['sigma'])
+            gamma = dist_from_samples('gamma', trace['gamma'])
+            kappa = dist_from_samples('kappa', trace['kappa'])
+            tint = dist_from_samples('tint', trace['tint'])
+            dispersion = dist_from_samples('dispersion', trace['dispersion'])
+
         # set cached_sim object
         cached_sim = CachedSEIRSimulation(rk)
     
@@ -126,8 +150,8 @@ def run(region, folder, load_trace=False, compute_sim=True, plot_posterior_dist 
         
         if not load_trace:
             # sample posterior distribution and save trace
-            draws = 20 #1000
-            tune = 10 #500
+            draws = 1000 #1000
+            tune = 500 #500
             trace = pm.sample(draws=draws, tune=tune, cores=4, chains=4, nuts_kwargs=dict(target_accept=0.9), init='advi+adapt_diag') # using NUTS sampling
             # save trace
             pm.backends.text.dump(region + os.path.sep, trace)
@@ -193,8 +217,9 @@ def main():
     parser.add_argument('--region', '-r', default='canada', help='region of interest')
     parser.add_argument('--load_trace', '-l', action='store_true', default=False, help='flag indicating to load trace')
     parser.add_argument('--no_propagate', '-np', action='store_true', default=False, help='flag indicating not to perform UQ or not')
-    parser.add_argument('--no_post_plot', '-npp', action='store_true', default=False, help='flag indicating not to plot posterior distribution')
-
+    parser.add_argument('--no_post_plot', '-npp', action='store_true', default=False, help='flag indicating not to plot posterior distributions')
+    parser.add_argument('--smart_prior', '-sp', action='store_true', default=False, help='flag indicating to use olde posterior distributions as new prior distributions')
+    parser.add_argument('--wait', '-w', action='store_true', default=False, help='wait 10 mins (used to get around theano compilation issue for parallel jobs)')
     args = parser.parse_args()
 
     folder = args.folder
@@ -202,7 +227,16 @@ def main():
     load_trace = args.load_trace
     plot_post = not args.no_post_plot
     propagate = not args.no_propagate
-    run(region, folder, load_trace, propagate, plot_post)
+    smart_prior = args.smart_prior
+
+    if args.wait:
+        print(time.time())
+        time.sleep(60*10)
+        print(time.time())
+
+    assert not (smart_prior and load_trace), "choose either to load trace or to use it as the prior distributions"
+
+    run(region, folder, smart_prior, load_trace, propagate, plot_post)
 
 if __name__ == '__main__':
     main()
