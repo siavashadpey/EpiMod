@@ -29,7 +29,9 @@ EpiMod is a data-driven epidemiological modeling tool used for COVID-19. Using B
     cd epimod
     pip3 install .
 
-
+.. raw:: html
+                </div>
+        </div>               
 
 .. |Build Status| image:: https://travis-ci.org/siavashadpey/epimod.svg?branch=master
     :target: https://travis-ci.org/siavashadpey/epimod.svg?branch=master
