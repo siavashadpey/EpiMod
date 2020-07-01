@@ -26,7 +26,6 @@ import epimod.data.read_region_data as data_fetcher
 class CachedSEIRSimulation(CachedSimulation):
     def _update_parameters(self):
         (beta, sigma, gamma, kappa, tint) = self._eqn_parameters
-        #print(beta, sigma, gamma, kappa, tint)
         eqn = self._ode_solver.equation
         eqn.beta = beta
         eqn.sigma = sigma
@@ -45,12 +44,24 @@ class RKSolverSeir(RKSolver):
                 y = np.diff(outs[1], prepend=0)
                 y[y<1.E-14] = 1.E-14
                 return (self._time_array, y, np.diff(outs[2], prepend=0))
-            else:
-                y = np.diff(outs[1], prepend=0)
-                y[y<1.E-14] = 1.E-14
-                return (self._time_array, y)
-        else:
-            error("output is not stored")
+
+            y = np.diff(outs[1], prepend=0)
+            y[y<1.E-14] = 1.E-14
+            return (self._time_array, y)
+        
+        error("output is not stored")
+
+def dist_from_samples(param_name, samples):
+    smin, smax = np.min(samples), np.max(samples)
+    width = smax - smin
+    x = np.linspace(smin, smax, 100)
+    y = stats.gaussian_kde(samples)(x)
+
+    # what was never sampled should have a small probability but not 0,
+    # so we'll extend the domain and use linear approximation of density on it
+    x = np.concatenate([[x[0] - 3 * width], x, [x[-1] + 3 * width]])
+    y = np.concatenate([[0], y, [0]])
+    return pm.distributions.Interpolated(param_name, x, y)
 
 def dist_from_samples(param_name, samples):
     smin, smax = np.min(samples), np.max(samples)
@@ -131,7 +142,6 @@ def run(region, folder, smart_prior=False, load_trace=False, compute_sim=True, p
         else:
             # use old posterior dist as new prior dist
             trace0 = pm.backends.text.load(region + os.path.sep)
-            print(trace0.varnamesList)
             beta = dist_from_samples('beta', trace['beta'])
             sigma = dist_from_samples('sigma', trace['sigma'])
             gamma = dist_from_samples('gamma', trace['gamma'])
@@ -219,7 +229,6 @@ def main():
     parser.add_argument('--no_propagate', '-np', action='store_true', default=False, help='flag indicating not to perform UQ or not')
     parser.add_argument('--no_post_plot', '-npp', action='store_true', default=False, help='flag indicating not to plot posterior distributions')
     parser.add_argument('--smart_prior', '-sp', action='store_true', default=False, help='flag indicating to use olde posterior distributions as new prior distributions')
-    parser.add_argument('--wait', '-w', action='store_true', default=False, help='wait 10 mins (used to get around theano compilation issue for parallel jobs)')
     args = parser.parse_args()
 
     folder = args.folder
@@ -228,11 +237,6 @@ def main():
     plot_post = not args.no_post_plot
     propagate = not args.no_propagate
     smart_prior = args.smart_prior
-
-    if args.wait:
-        print(time.time())
-        time.sleep(60*10)
-        print(time.time())
 
     assert not (smart_prior and load_trace), "choose either to load trace or to use it as the prior distributions"
 

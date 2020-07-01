@@ -5,7 +5,7 @@ import numpy as np
 from epimod.eqn.equation import Equation
 
 class Seir(Equation):
-    def __init__(self, beta=0, sigma=0, gamma=0, kappa = 1, tau = math.inf, tint = 5):
+    def __init__(self, beta=0, sigma=0, gamma=0, kappa = 1, tau = math.inf, tint = 5, population = 1E6):
         super().__init__()
         self._n_components = 4
         self._n_parameters = 5
@@ -16,6 +16,15 @@ class Seir(Equation):
         self._kappa = kappa
         self._tau = tau
         self._tint = tint
+        self._population = population
+
+    @property
+    def population(self):
+        return self._population
+
+    @population.setter
+    def population(self, value):
+        self._population = value
 
     @property
     def beta(self):
@@ -82,24 +91,25 @@ class Seir(Equation):
         (b, db0, dkappa, dtint) = Seir._compute_beta(self._beta0, self._kappa, self._tau, self._tint, t)
         s = self._sigma
         g = self._gamma
-        #print(b)
+        N = self._population
+
         f = np.array([
-            -b*S*I,
-             b*S*I - s*E,
+            -b*S*I/N,
+             b*S*I/N - s*E,
              s*E - g*I, 
              g*I])
 
         if not is_grad_needed:
             return f
 
-        df_du = np.array([[-b*I,  0, -b*S, 0],
-                          [ b*I, -s,  b*S, 0],
+        df_du = np.array([[-b*I/N,  0, -b*S/N, 0],
+                          [ b*I/N, -s,  b*S/N, 0],
                           [   0,  s,   -g, 0],
                           [   0,  0,    g, 0]])
 
         # rows: df_dbeta0, df_dsigma, df_dgamma, df_dkappa, df_dtint
-        df_dp = np.array([[-db0*S*I,  0,  0, -dkappa*S*I, -dtint*S*I],
-                          [ db0*S*I, -E,  0,  dkappa*S*I,  dtint*S*I],
+        df_dp = np.array([[-db0*S*I/N,  0,  0, -dkappa*S*I/N, -dtint*S*I/N],
+                          [ db0*S*I/N, -E,  0,  dkappa*S*I/N,  dtint*S*I/N],
                           [       0,  E, -I,           0,           0],
                           [       0,  0,  I,           0,           0]])
 
@@ -117,27 +127,12 @@ class Seir(Equation):
 
     @staticmethod
     def _compute_beta(theta0, theta1, tau, dt, t):
-        # beta = func(beta0, kappa; t, tau)
-        # returns beta, dbeta_theta0, dbeta_dtheta1, dbeta_dt
-
-        #dt = t - tau
-        #if dt <= 0:
-        #   return (theta0, 1, 0)
-        #else:
-        #   exp = math.exp(-theta1*dt)
-        #   return (theta0*exp, exp, -theta0*exp*dt)
-        
-
         if t <= tau:
             return (theta0, 1, 0, 0)
-        elif t >= tau + dt:
+        if t >= tau + dt:
             return (theta1*theta0, theta1, theta0, 0)
-        elif t > tau and t < tau + dt:
+        if t > tau and t < tau + dt:
             ratio = (t-tau)/dt
             return (theta0 + (theta1 - 1)*theta0*ratio, 1 + (theta1 - 1)*ratio, theta0*ratio, (theta1 - 1)*theta0*(-ratio)/dt)
-            # (theta0 + 0.5*(theta1 - 1)*theta0*(1 - math.cos(math.pi*dt)), 1 + (theta1 - 1)*ratio, theta0*ratio) 
         
-        print("error in seir.compute_beta")
-        print(theta0, theta1, tau, dt, t)
-        raise
-
+        raise Exception(theta0, theta1, tau, dt, t)

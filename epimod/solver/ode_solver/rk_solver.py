@@ -2,13 +2,13 @@ import math
 import numpy as np
 from epimod.solver.ode_solver.ode_solver import ODESolver
 
-#TODO: add RKType (e.g. RK1, RK4, ...)
-
 class RKSolver(ODESolver):
-    def __init__(self, ti, tf, n_steps = 1, type='rk4'):
+    _rk_types = np.array(["explicit_euler", "rk1", "rk4"])
+
+    def __init__(self, ti, tf, n_steps = 1, typ='rk4'):
         super().__init__(ti, tf, n_steps)
-        self._rk_types = np.array(["explicit_euler", "rk1", "rk4"])
-        self.rk_type = type
+        
+        self.rk_type = typ
         self._initialize_rk_coefficients()
 
     @property
@@ -16,9 +16,10 @@ class RKSolver(ODESolver):
         return self._rk_type
     
     @rk_type.setter
-    def rk_type(self, type):
-        assert type.lower() in self._rk_types, type +  " is an unsupported RK type."
-        self._rk_type = type.lower()
+    def rk_type(self, typ):
+        typ = typ.lower()
+        assert typ in RKSolver._rk_types, typ +  " is an unsupported RK type."
+        self._rk_type = typ
         self._initialize_rk_coefficients()
 
 
@@ -119,4 +120,3 @@ class RKSolver(ODESolver):
             self._A[3,2] = 1.0
             self._b = np.array([1./6., 1./3., 1./3., 1./6.])
             self._c = np.array([0., 0.5, 0.5, 1.])
-
