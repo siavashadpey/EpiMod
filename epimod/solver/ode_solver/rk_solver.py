@@ -4,7 +4,7 @@ from epimod.solver.ode_solver.ode_solver import ODESolver
 
 class RKSolver(ODESolver):
     _rk_types = np.array(["explicit_euler", "rk1", "rk4"])
-    
+
     def __init__(self, ti, tf, n_steps = 1, typ='rk4'):
         super().__init__(ti, tf, n_steps)
         
@@ -120,4 +120,3 @@ class RKSolver(ODESolver):
             self._A[3,2] = 1.0
             self._b = np.array([1./6., 1./3., 1./3., 1./6.])
             self._c = np.array([0., 0.5, 0.5, 1.])
-

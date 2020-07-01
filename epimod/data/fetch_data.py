@@ -106,9 +106,9 @@ def main():
     # make a copy of today's folder
     today_dir = args.folder + os.path.sep + "today"
     cmd = "rm -fr " + today_dir
-    subprocess.call(cmd, shell=True)
+    subprocess.call(['/bin/rm', '-fr', today_dir])
     cmd = "cp -r " + folder_dir + " " + today_dir
-    subprocess.call(cmd, shell=True)
+    subprocess.call(['/bin/cp', '-r', folder_dir, today_dir])
 
 if __name__ == '__main__':
     main()
